@@ -1,13 +1,20 @@
-import Link from "next/link"
-import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet"
-import { Button } from "./ui/button"
-import { CircleUser, Menu, Package2, Search } from "lucide-react"
-import { Input } from "./ui/input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu"
-import { cookies } from "next/headers"
-import { createServerClient } from "@/utils/supabase"
-import { redirect } from "next/navigation"
-import ThemeToggle from "./ThemeToggle"
+import Link from 'next/link'
+import { Sheet, SheetContent, SheetTrigger } from './ui/sheet'
+import { Button } from './ui/button'
+import { CircleUser, Menu, Package2, Search } from 'lucide-react'
+import { Input } from './ui/input'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@/utils/supabase'
+import { redirect } from 'next/navigation'
+import ThemeToggle from './ThemeToggle'
 
 const NavBar = async () => {
   const cookieStore = cookies()
@@ -27,7 +34,7 @@ const NavBar = async () => {
   }
 
   return (
-    <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+    <header className="sticky top-0 z-50 flex h-16 w-full items-center gap-4 border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-6">
       <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
         <Link
           href="/"
@@ -45,11 +52,7 @@ const NavBar = async () => {
       </nav>
       <Sheet>
         <SheetTrigger asChild>
-          <Button
-            variant="outline"
-            size="icon"
-            className="shrink-0 md:hidden"
-          >
+          <Button variant="outline" size="icon" className="shrink-0 md:hidden">
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
@@ -84,34 +87,41 @@ const NavBar = async () => {
           </div>
         </form>
         <ThemeToggle />
-        {user ? <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon" className="rounded-full">
-              <CircleUser className="h-5 w-5" />
-              <span className="sr-only">Toggle user menu</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Settings</DropdownMenuItem>
-            <DropdownMenuItem>Support</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <form action={signOut} className="w-full">
-                <Button variant="ghost" className="p-0 h-auto w-full cursor-default text-left justify-start" type="submit">Logout</Button>
-              </form>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-        :
+        {user ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                <CircleUser className="h-5 w-5" />
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <form action={signOut} className="w-full">
+                  <Button
+                    variant="ghost"
+                    className="h-auto w-full cursor-default justify-start p-0 text-left"
+                    type="submit"
+                  >
+                    Logout
+                  </Button>
+                </form>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
           <Link href="/login">
             <Button variant="secondary" size="icon" className="rounded-full">
               <CircleUser className="h-5 w-5" />
               <span className="sr-only">Login</span>
             </Button>
           </Link>
-        }
+        )}
       </div>
     </header>
   )

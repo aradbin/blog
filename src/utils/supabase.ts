@@ -8,14 +8,14 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export const createBrowserClient = () =>
   browserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_API_URL!,
+    process.env.NEXT_PUBLIC_API_KEY!,
   )
 
 export const createServerClient = (cookieStore: ReturnType<typeof cookies>) =>
   serverClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_API_URL!,
+    process.env.NEXT_PUBLIC_API_KEY!,
     {
       cookies: {
         get(name: string) {
@@ -48,8 +48,8 @@ export const createMiddlewareClient = (request: NextRequest) => {
   let response = NextResponse.next({ request: { headers: request.headers } })
 
   const supabase = serverClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_API_URL!,
+    process.env.NEXT_PUBLIC_API_KEY!,
     {
       cookies: {
         get(name: string) {

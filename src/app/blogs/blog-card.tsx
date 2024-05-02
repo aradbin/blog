@@ -6,12 +6,12 @@ export default function BlogCard({ blog }: any) {
   return (
     <Card className="h-[350px] w-full rounded-xl">
       <CardHeader className="p-0">
-        <Image
+        {/* <Image
           alt="Banner"
           src={blog?.banner || placeholder}
           className="h-[200px] w-full rounded-t-xl"
           placeholder="blur"
-        />
+        /> */}
       </CardHeader>
       <CardContent>
         <h2 className="pt-2">{blog?.title}</h2>

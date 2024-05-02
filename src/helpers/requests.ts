@@ -1,9 +1,22 @@
 import axios, { AxiosResponse } from 'axios'
-import { stringifyRequestQuery } from './utils'
+import { BLOGS_URL } from './apiEndpoints'
 
 axios.defaults.baseURL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 axios.defaults.headers.common['apiKey'] = process.env.NEXT_PUBLIC_API_KEY || ''
+
+export async function getRequestInfinity({
+  pageParam = { limit: 2, offset: 0 },
+}) {
+  return await axios
+    .get(`${BLOGS_URL}?limit=${pageParam.limit}&offset=${pageParam.offset}`)
+    .then((response: AxiosResponse<any>) => {
+      return response.data
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+}
 
 export async function getRequest(url: string, params: string = '') {
   return await axios

@@ -14,8 +14,11 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
-  title: 'Next.js and Supabase Starter Kit',
-  description: 'The fastest way to build apps with Next.js and Supabase',
+  title: {
+    template: '%s | Acme Dashboard',
+    default: 'Acme Dashboard',
+  },
+  description: 'Acme Dashboard',
 }
 
 export default function RootLayout({
@@ -39,9 +42,7 @@ export default function RootLayout({
         >
           <ReactQueryProvider>
             <NavBar />
-            <main className="flex flex-col items-center p-8">
-              {children}
-            </main>
+            <main className="flex flex-col items-center p-8">{children}</main>
             {/* <Footer /> */}
             <ReactQueryDevtools initialIsOpen={false} />
           </ReactQueryProvider>

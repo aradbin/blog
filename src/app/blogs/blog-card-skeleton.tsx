@@ -1,6 +1,6 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
-export default function SkeletonBlogCard({ count = 1 }) {
+export default function BlogCardSkeleton({ count = 1 }) {
   return (
     <>
       {Array.from({ length: count }).map((_, index) => (

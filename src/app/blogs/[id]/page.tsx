@@ -1,9 +1,7 @@
 import { BLOGS_URL } from '@/helpers/apiEndpoints'
-import BlogPostSkeleton from './blog-post-skeleton'
-import Image from 'next/image'
-import placeholder from './../../../../public/placeholder.png'
 import { getRequest } from '@/helpers/requests'
 import { Metadata } from 'next'
+import BlogPost from '../../../components/blog/blog-post'
 
 export async function generateMetadata(params: any): Promise<Metadata> {
   const item = await getRequest(`${BLOGS_URL}`, {
@@ -19,27 +17,10 @@ export async function generateMetadata(params: any): Promise<Metadata> {
   return {}
 }
 
-export default async function BlogPost(params: any) {
-  const blog = await getRequest(`${BLOGS_URL}`, {
-    id: `eq.${params.params.id}`,
-  })
-  console.log(blog)
-
+export default async function Page(params: any) {
   return (
     <div className="w-full md:w-4/5 lg:w-3/5 xl:w-2/5 2xl:w-2/5">
-      {/* {data?.length > 0 && 
-        <div>
-          <Image
-            alt="Banner"
-            src={data[0]?.banner || placeholder}
-            className="w-full"
-            placeholder="blur"
-          />
-          <h4>{data[0].title}</h4>
-          <p>{data[0].description}</p>  
-        </div>
-      } */}
-      <BlogPostSkeleton />
+      <BlogPost id={params.params.id} />
     </div>
   )
 }

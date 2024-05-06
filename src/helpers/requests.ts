@@ -3,11 +3,34 @@
 import axios, { AxiosResponse } from 'axios'
 import { stringifyRequestQuery } from './utils'
 
+const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+const headers = {
+  apiKey: process.env.NEXT_PUBLIC_API_KEY || '',
+}
+
 axios.defaults.baseURL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 axios.defaults.headers.common['apiKey'] = process.env.NEXT_PUBLIC_API_KEY || ''
 
 export async function getRequest(url: string, query: any = {}) {
+  return await fetch(
+    `${baseUrl}${url}${
+      Object.keys(query).length > 0 ? `?${stringifyRequestQuery(query)}` : ''
+    }`,
+    {
+      headers: headers,
+    },
+  )
+    .then(async (response) => {
+      const data = await response.json()
+      return data
+    })
+    .catch((error) => {
+      catchError(error)
+    })
+}
+
+export async function getRequestAxios(url: string, query: any = {}) {
   return await axios
     .get(
       `${url}${

@@ -1,13 +1,13 @@
 'use client'
 import { BLOGS_URL } from '@/helpers/apiEndpoints'
-import BlogCard from './blog-card'
+import BlogCard from '../../components/blog/blog-card'
 import { Fragment } from 'react'
 import { Button } from '@/components/ui/button'
 import { useInfiniteQueryHook } from '@/helpers/useQueryHook'
-import BlogCardSkeleton from './blog-card-skeleton'
+import BlogCardSkeleton from '../../components/blog/blog-card-skeleton'
 import { Loader2 } from 'lucide-react'
 
-export default function Blogs(params: any) {
+export default function Page(params: any) {
   const { data, fetchNextPage, isFetching, isFetchingNextPage }: any =
     useInfiniteQueryHook(BLOGS_URL, params?.searchParams)
 

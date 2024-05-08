@@ -15,7 +15,7 @@ export async function GET(req: NextRequest, { params }: { params: { category: st
       .map((_, tr) => {
         return {
           name: $(tr).find('td:nth-child(2) a').text().trim(),
-          price: $(tr).find('td:nth-child(3)').text(),
+          price: $(tr).find('td:nth-child(3)').text().trim(),
         }
       })
       .get()

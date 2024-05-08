@@ -1,30 +1,20 @@
 'use server'
-
 import axios, { AxiosResponse } from 'axios'
 import { stringifyRequestQuery } from './utils'
 
+const baseUrlLocal = process.env.NEXT_PUBLIC_API_KEY_LOCAL || 'http://localhost:3000'
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-const headers = {
-  apiKey: process.env.NEXT_PUBLIC_API_KEY || '',
-}
+const apiKey = process.env.NEXT_PUBLIC_API_KEY || ''
+const headers = { apiKey: apiKey }
 
-axios.defaults.baseURL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
-axios.defaults.headers.common['apiKey'] = process.env.NEXT_PUBLIC_API_KEY || ''
+axios.defaults.baseURL = baseUrl
+axios.defaults.headers.common['apiKey'] = apiKey
 
 export async function getRequest(url: string, query: any = {}) {
-  return await fetch(
-    `${baseUrl}${url}${
-      Object.keys(query).length > 0 ? `?${stringifyRequestQuery(query)}` : ''
-    }`,
-    {
-      headers: headers,
-    },
-  )
-    .then(async (response) => {
-      const data = await response.json()
-      return data
-    })
+  return await fetch(`${baseUrl}${url}${Object.keys(query).length > 0 ? `?${stringifyRequestQuery(query)}` : ''}`, {
+    headers: headers,
+  })
+    .then((response) => response.json())
     .catch((error) => {
       catchError(error)
     })
@@ -32,14 +22,18 @@ export async function getRequest(url: string, query: any = {}) {
 
 export async function getRequestAxios(url: string, query: any = {}) {
   return await axios
-    .get(
-      `${url}${
-        Object.keys(query).length > 0 ? `?${stringifyRequestQuery(query)}` : ''
-      }`,
-    )
+    .get(`${url}${Object.keys(query).length > 0 ? `?${stringifyRequestQuery(query)}` : ''}`)
     .then((d: AxiosResponse<any>) => {
       return d.data
     })
+    .catch((error) => {
+      catchError(error)
+    })
+}
+
+export async function getRequestLocal(url: string, query: any = {}) {
+  return await fetch(`${baseUrlLocal}${url}${Object.keys(query).length > 0 ? `?${stringifyRequestQuery(query)}` : ''}`)
+    .then((response) => response.json())
     .catch((error) => {
       catchError(error)
     })
@@ -67,6 +61,18 @@ export async function updateRequest(url: string, values: any) {
   return await axios.patch(url, values).catch((error) => {
     catchError(error)
   })
+}
+
+export async function upsertRequest(url: string, values: any) {
+  return await axios
+    .post(url, values, {
+      headers: {
+        Prefer: 'resolution=merge-duplicates',
+      },
+    })
+    .catch((error) => {
+      catchError(error)
+    })
 }
 
 export async function deleteRequest(url: string) {

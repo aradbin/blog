@@ -40,6 +40,7 @@
     "@tanstack/react-query-devtools": "^5.17.15",
     "@vercel/analytics": "^1.1.1",
     "axios": "^1.6.5",
+    "cheerio": "1.0.0-rc.12",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "geist": "^1.0.0",

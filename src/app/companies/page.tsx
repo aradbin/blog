@@ -12,53 +12,49 @@ import { Input } from '@/components/ui/input'
 export default function Page(params: any) {
   const [companies, setCompanies] = useState<any>([])
   const [keyword, setKeyword] = useState('')
-  const { data, isFetching }: any = useQueryHook(COMPANIES_URL, { ...params?.searchParams, order: 'name.asc' })
+  const { data, isFetching, refetch }: any = useQueryHook(COMPANIES_URL, { ...params?.searchParams, order: 'code.asc' })
 
   useEffect(() => {
     setKeyword('')
   }, [])
 
   useEffect(() => {
-    const filteredCompanies = data?.filter((item: any) => item.name.toLowerCase().includes(keyword.toLowerCase()))
+    const filteredCompanies = data?.filter((item: any) => item?.code?.toLowerCase().includes(keyword?.toLowerCase()))
     setCompanies(filteredCompanies)
   }, [data, keyword])
 
   const call = async () => {
-    const categories = ['A', 'B', 'G', 'N', 'Z']
-    categories.map(async (category) => {
-      const response = await getRequestLocal(`/api/dse/sync/category/${category}`)
+    const response = await getRequestLocal(`/api/dse/sync`)
 
-      const has: any[] = []
-      const hasNot: any[] = []
+    const companiesToUpdate: any[] = []
+    const companiesToCreate: any[] = []
 
-      response?.companies?.map((company: any) => {
-        let matched: any = null
-        data?.map((item: any) => {
-          if (item.name === company.name) {
-            matched = item
-          }
+    for (const company of response.companies) {
+      const matched = data?.find((item: any) => item.code === company.code)
+
+      if (matched) {
+        companiesToUpdate.push({
+          id: matched.id,
+          code: company.code,
+          price: parseFloat(company.price.replace(/,/g, '')),
+          market: 'dse',
+          category: company.category,
+          sector: company.sector,
         })
-        if (matched) {
-          has.push({
-            id: matched.id,
-            name: company.name,
-            price: parseFloat(company.price.replace(/,/g, '')),
-            market: 'dse',
-            category: category,
-          })
-        } else {
-          hasNot.push({
-            name: company.name,
-            price: parseFloat(company.price.replace(/,/g, '')),
-            market: 'dse',
-            category: category,
-          })
-        }
-      })
+      } else {
+        companiesToCreate.push({
+          code: company.code,
+          price: parseFloat(company.price.replace(/,/g, '')),
+          market: 'dse',
+          category: company.category,
+          sector: company.sector,
+        })
+      }
+    }
 
-      await upsertRequest(COMPANIES_URL, has)
-      await createRequest(COMPANIES_URL, hasNot)
-    })
+    await upsertRequest(COMPANIES_URL, companiesToUpdate)
+    await createRequest(COMPANIES_URL, companiesToCreate)
+    refetch()
   }
 
   return (
@@ -80,7 +76,7 @@ export default function Page(params: any) {
           Sync
         </Button>
       </div>
-      <div className="grid w-full grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+      <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
         {companies?.map((item: any, index: number) => <CompanyCard key={index} company={item} />)}
         {isFetching && <CompanyCardSkeleton count={20} />}
       </div>

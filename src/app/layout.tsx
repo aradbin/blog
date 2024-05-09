@@ -8,9 +8,7 @@ import ReactQueryProvider from '@/providers/ReactQueryProvider'
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
+const defaultUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
 
 export const metadata = {
   metadataBase: new URL(defaultUrl),
@@ -21,28 +19,15 @@ export const metadata = {
   description: 'Acme Dashboard',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={GeistSans.className}
-      style={{ colorScheme: 'dark' }}
-    >
+    <html lang="en" className={GeistSans.className} style={{ colorScheme: 'dark' }}>
       <body className="bg-background text-foreground">
         <NextTopLoader showSpinner={false} height={2} color="#2acf80" />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           <ReactQueryProvider>
             <NavBar />
-            <main className="flex flex-col items-center p-8">{children}</main>
+            <main className="flex flex-col items-center p-4 md:p-6 lg:p-8">{children}</main>
             {/* <Footer /> */}
             <ReactQueryDevtools initialIsOpen={false} />
           </ReactQueryProvider>

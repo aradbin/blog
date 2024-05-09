@@ -7,19 +7,20 @@ import { Separator } from '../ui/separator'
 export default function CompanyCard({ company }: any) {
   return (
     // <Link href={`/companys/${company?.id}`}>
-    <Card className="h-[115px] w-full rounded-lg">
+    <Card className="h-[170px] w-full rounded-lg">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
-        <CardTitle className="text-base font-medium">{company.name}</CardTitle>
-        <Badge className="rounded-lg">{company.category}</Badge>
+        <CardTitle className="text-base font-medium">{company?.code}</CardTitle>
+        <Badge className="rounded-lg">{company?.category}</Badge>
       </CardHeader>
       <CardContent className="p-4">
-        <div>৳ {company.price}</div>
+        <div>৳ {company?.price}</div>
       </CardContent>
-      {/* <Separator />
-        <CardFooter className="flex justify-between p-4">
-          <Button size="sm" variant="outline">Cancel</Button>
-          <Button size="sm">Deploy</Button>
-        </CardFooter> */}
+      <Separator />
+      <CardFooter className="flex justify-between overflow-hidden p-4">
+        <Badge className="rounded-lg">{company?.sector}</Badge>
+        {/* <Button size="sm" variant="outline">Cancel</Button>
+        <Button size="sm">Deploy</Button> */}
+      </CardFooter>
     </Card>
     // </Link>
   )

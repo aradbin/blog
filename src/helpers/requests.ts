@@ -1,4 +1,4 @@
-// 'use server'
+'use server'
 import axios, { AxiosResponse } from 'axios'
 import { stringifyRequestQuery } from './utils'
 

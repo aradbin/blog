@@ -1,14 +1,27 @@
 'use client'
 import { COMPANIES_URL } from '@/helpers/apiEndpoints'
-import BlogCard from '../../components/blog/blog-card'
-import { Fragment } from 'react'
+import { useEffect, useState } from 'react'
 import { useQueryHook } from '@/helpers/useQueryHook'
-import BlogCardSkeleton from '../../components/blog/blog-card-skeleton'
 import { createRequest, getRequestLocal, upsertRequest } from '@/helpers/requests'
 import { Button } from '@/components/ui/button'
+import { Search } from 'lucide-react'
+import CompanyCard from '@/components/company/company-card'
+import CompanyCardSkeleton from '@/components/company/company-card-skeleton'
+import { Input } from '@/components/ui/input'
 
 export default function Page(params: any) {
-  const { data, isFetching }: any = useQueryHook(COMPANIES_URL, params?.searchParams)
+  const [companies, setCompanies] = useState<any>([])
+  const [keyword, setKeyword] = useState('')
+  const { data, isFetching }: any = useQueryHook(COMPANIES_URL, { ...params?.searchParams, order: 'name.asc' })
+
+  useEffect(() => {
+    setKeyword('')
+  }, [])
+
+  useEffect(() => {
+    const filteredCompanies = data?.filter((item: any) => item.name.toLowerCase().includes(keyword.toLowerCase()))
+    setCompanies(filteredCompanies)
+  }, [data, keyword])
 
   const call = async () => {
     const categories = ['A', 'B', 'G', 'N', 'Z']
@@ -50,18 +63,26 @@ export default function Page(params: any) {
 
   return (
     <section className="flex w-full flex-col gap-4">
-      <div className="flex flex-row-reverse">
+      <div className="flex flex-row justify-between">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search Company"
+            className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+            value={keyword}
+            onChange={(e) => {
+              setKeyword(e.target.value.toLowerCase())
+            }}
+          />
+        </div>
         <Button variant={'default'} onClick={() => call()} className="w-[100px]">
           Sync
         </Button>
       </div>
-      <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-        {data?.pages?.map((page: any, pageIndex: number) => (
-          <Fragment key={pageIndex}>
-            {page?.map((item: any, index: number) => <BlogCard key={index} blog={item} />)}
-          </Fragment>
-        ))}
-        {isFetching && <BlogCardSkeleton count={20} />}
+      <div className="grid w-full grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
+        {companies?.map((item: any, index: number) => <CompanyCard key={index} company={item} />)}
+        {isFetching && <CompanyCardSkeleton count={20} />}
       </div>
     </section>
   )

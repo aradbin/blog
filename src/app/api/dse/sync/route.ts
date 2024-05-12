@@ -3,13 +3,16 @@ import * as cheerio from 'cheerio'
 
 export async function GET() {
   try {
-    const companiesByCategory = await getByCategories()
-    const sectors = await getSectors()
-    const companiesBySector = await getBySectors(sectors)
+    const companies = await getByCategories()
+    const companiesBySector = await getBySectors()
+    const companiesByIndex = await getByIndex()
 
-    const companies = companiesByCategory.map((item1) => {
-      const matchingItem = companiesBySector.find((item2) => item1.code === item2.code)
-      return matchingItem ? { ...item1, ...matchingItem } : item1
+    companies.forEach((company: any) => {
+      const matchingItemBySector = companiesBySector.find((item) => item.code === company.code)
+      const matchingItemByIndex = companiesByIndex.find((item) => item.code === company.code)
+
+      company.sector = matchingItemBySector?.sector
+      company.indexes = matchingItemByIndex?.indexes || null
     })
 
     return NextResponse.json({ companies })
@@ -61,24 +64,53 @@ const getSectors = async () => {
   return sectors
 }
 
-const getBySectors = async (sectors: any) => {
+const getBySectors = async () => {
+  const sectors = await getSectors()
   const companies = []
   for (const sector of sectors) {
     const responseBySector = await fetch(`https://dsebd.org/${sector?.url}`).then((response) => response.text())
 
     const $ = cheerio.load(responseBySector)
 
-    const companiesBySectorUnformatted = $('.shares-table')
+    const companiesBySector = $('.shares-table')
       .find('tbody tr')
-      .map((_, tr) => ({
-        code: $(tr).find('td:nth-child(2) a').text().trim(),
+      .find('td:nth-child(2) a')
+      .map((_, element) => ({
+        code: $(element).text().trim(),
         sector: sector?.name,
       }))
       .get()
 
-    const companiesBySector = companiesBySectorUnformatted.slice(1)
-
     companies.push(...companiesBySector)
+  }
+
+  return companies
+}
+
+const getByIndex = async () => {
+  const companies: { code: string; indexes: string[] }[] = []
+  const indexes = [
+    { name: 'DS30', url: 'dse30_share.php' },
+    { name: 'DSEX', url: 'dseX_share.php' },
+  ]
+
+  for (const index of indexes) {
+    const responseByIndex = await fetch(`https://www.dsebd.org/${index.url}`).then((response) => response.text())
+
+    const $ = cheerio.load(responseByIndex)
+
+    const companyElements = $('.shares-table tbody tr').find('td:nth-child(2) a')
+
+    companyElements.each((_, element) => {
+      const code = $(element).text().trim()
+      const existingCompany = companies.find((company) => company.code === code)
+
+      if (existingCompany) {
+        existingCompany.indexes.push(index.name)
+      } else {
+        companies.push({ code, indexes: [index.name] })
+      }
+    })
   }
 
   return companies

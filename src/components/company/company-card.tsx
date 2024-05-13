@@ -1,5 +1,4 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import Link from 'next/link'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
@@ -41,7 +40,7 @@ export default function CompanyCard({ company }: any) {
         </Card>
       </DialogTrigger>
 
-      <DialogContent className="max-w-sm p-0 md:max-w-md lg:max-w-lg">
+      <DialogContent className="max-w-72 w-11/12 p-0 sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
         <DialogHeader className="items-center p-6 pb-2">
           <DialogTitle>{company?.code}</DialogTitle>
           <DialogDescription>{company?.name}</DialogDescription>

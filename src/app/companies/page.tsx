@@ -1,11 +1,12 @@
 'use client'
 import { COMPANIES_URL } from '@/helpers/apiEndpoints'
 import { useEffect, useState } from 'react'
-import { getRequest } from '@/helpers/requests'
+import { createRequest, getRequest, getRequestLocal, upsertRequest } from '@/helpers/requests'
 import { Search } from 'lucide-react'
 import CompanyCard from '@/components/company/company-card'
 import CompanyCardSkeleton from '@/components/company/company-card-skeleton'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 export default function Page(params: any) {
   const [keyword, setKeyword] = useState('')
@@ -16,10 +17,10 @@ export default function Page(params: any) {
     getCompanies()
   }, [keyword])
 
-  const getCompanies = async () => {
+  const getCompanies = async (force = false) => {
     setLoading(true)
     let initialCompanies = []
-    if (localStorage.getItem('companies')) {
+    if (localStorage.getItem('companies') && !force) {
       initialCompanies = JSON.parse(localStorage.getItem('companies') || '[]')
     } else {
       initialCompanies = await getRequest(COMPANIES_URL, { ...params?.searchParams, order: 'code.asc' }).then(
@@ -38,41 +39,47 @@ export default function Page(params: any) {
     setLoading(false)
   }
 
-  // const call = async () => {
-  //   const response = await getRequestLocal(`/api/dse/sync`)
+  const call = async () => {
+    const response = await getRequestLocal(`/api/dse/sync`)
+    console.log(response?.companies[87].FullName)
+    const currentCompanies = await getRequest(COMPANIES_URL)
 
-  //   const companiesToUpdate: any[] = []
-  //   const companiesToCreate: any[] = []
+    const companiesToUpdate: any[] = []
+    const companiesToCreate: any[] = []
 
-  //   for (const company of response.companies) {
-  //     const matched = data?.find((item: any) => item.code === company.code)
+    for (const company of response.companies) {
+      const matched = currentCompanies?.find((item: any) => item.code === company.code)
 
-  //     if (matched) {
-  //       companiesToUpdate.push({
-  //         id: matched.id,
-  //         code: company.code,
-  //         price: parseFloat(company.price.replace(/,/g, '')),
-  //         market: 'dse',
-  //         category: company.category,
-  //         sector: company.sector,
-  //         indexes: company.indexes
-  //       })
-  //     } else {
-  //       companiesToCreate.push({
-  //         code: company.code,
-  //         price: parseFloat(company.price.replace(/,/g, '')),
-  //         market: 'dse',
-  //         category: company.category,
-  //         sector: company.sector,
-  //         indexes: company.indexes
-  //       })
-  //     }
-  //   }
+      const payload = {
+        market: 'dse',
+        code: company.code,
+        price: parseFloat(company.price.replace(/,/g, '')),
+        category: company.category,
+        indexes: company.indexes || null,
+        name: company.FullName || null,
+        sector: company.BusinessSegment || null,
+        eps: company.Eps || 0,
+        pe: company.PE || 0,
+        pe_audited: company.AuditedPE || 0,
+        pe_unaudited: company.UnAuditedPE || 0,
+        nav: company.NAV || 0,
+        nav_price: company.NavPrice || 0,
+      }
 
-  //   await upsertRequest(COMPANIES_URL, companiesToUpdate)
-  //   await createRequest(COMPANIES_URL, companiesToCreate)
-  //   refetch()
-  // }
+      if (matched) {
+        companiesToUpdate.push({
+          id: matched.id,
+          ...payload,
+        })
+      } else {
+        companiesToCreate.push(payload)
+      }
+    }
+
+    await upsertRequest(COMPANIES_URL, companiesToUpdate)
+    await createRequest(COMPANIES_URL, companiesToCreate)
+    getCompanies(true)
+  }
 
   return (
     <section className="flex w-full flex-col gap-4">
@@ -89,9 +96,9 @@ export default function Page(params: any) {
             }}
           />
         </div>
-        {/* <Button variant={'default'} onClick={() => call()} className="w-[100px]">
+        <Button variant={'default'} onClick={() => call()} className="w-[100px]">
           Sync
-        </Button> */}
+        </Button>
       </div>
       <div className="grid w-full grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8">
         {companies?.map((item: any, index: number) => <CompanyCard key={index} company={item} />)}

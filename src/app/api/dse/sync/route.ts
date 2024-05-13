@@ -3,16 +3,19 @@ import * as cheerio from 'cheerio'
 
 export async function GET() {
   try {
-    const companies = await getByCategories()
-    const companiesBySector = await getBySectors()
+    const companiesByCategories = await getByCategories()
     const companiesByIndex = await getByIndex()
+    const companiesInfo = await getAmarstock()
 
-    companies.forEach((company: any) => {
-      const matchingItemBySector = companiesBySector.find((item) => item.code === company.code)
+    const companies = companiesByCategories.map((company: any) => {
       const matchingItemByIndex = companiesByIndex.find((item) => item.code === company.code)
+      const matchingItemByInfo = companiesInfo.find((item: any) => item.Scrip === company.code)
 
-      company.sector = matchingItemBySector?.sector
-      company.indexes = matchingItemByIndex?.indexes || null
+      return {
+        ...company,
+        indexes: matchingItemByIndex?.indexes || null,
+        ...matchingItemByInfo,
+      }
     })
 
     return NextResponse.json({ companies })
@@ -114,4 +117,10 @@ const getByIndex = async () => {
   }
 
   return companies
+}
+
+const getAmarstock = async () => {
+  const info = await fetch(`https://www.amarstock.com/LatestPrice/34267d8d73dd`).then((response) => response.json())
+
+  return info
 }

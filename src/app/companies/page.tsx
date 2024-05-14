@@ -39,7 +39,7 @@ export default function Page(params: any) {
     setLoading(false)
   }
 
-  const call = async () => {
+  const sync = async () => {
     const response = await getRequestLocal(`/api/dse/sync`)
     console.log(response?.companies[87].FullName)
     const currentCompanies = await getRequest(COMPANIES_URL)
@@ -96,7 +96,7 @@ export default function Page(params: any) {
             }}
           />
         </div>
-        <Button variant={'default'} onClick={() => call()} className="w-[100px]">
+        <Button variant={'default'} onClick={() => sync()} className="w-[100px]">
           Sync
         </Button>
       </div>

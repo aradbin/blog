@@ -14,7 +14,7 @@ export default async function Login() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if(user){
+  if (user) {
     redirect('/')
   }
 
@@ -23,9 +23,7 @@ export default async function Login() {
       <Card className="mx-auto max-w-sm rounded-xl">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
+          <CardDescription>Enter your email below to login to your account</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4">
@@ -40,7 +38,7 @@ export default async function Login() {
             <LoginForm />
           </div>
           <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
+            Not registered?{' '}
             <Link href="/register" className="underline">
               Sign up
             </Link>

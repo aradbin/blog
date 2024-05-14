@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet'
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from './ui/sheet'
 import { Button } from './ui/button'
 import { CircleUser, Menu, Package2, Search } from 'lucide-react'
 import { Input } from './ui/input'
@@ -56,16 +56,22 @@ const NavBar = async () => {
         </SheetTrigger>
         <SheetContent side="left">
           <nav className="grid gap-6 text-lg font-medium">
-            <Link href="#" className="flex items-center gap-2 text-lg font-semibold">
-              <Package2 className="h-6 w-6" />
-              <span className="sr-only">Acme Inc</span>
-            </Link>
-            <Link href="/blogs" className="text-muted-foreground hover:text-foreground">
-              Blogs
-            </Link>
-            <Link href="/companies" className="text-muted-foreground hover:text-foreground">
-              Companies
-            </Link>
+            <SheetClose asChild>
+              <Link href="#" className="flex items-center gap-2 text-lg font-semibold">
+                <Package2 className="h-6 w-6" />
+                <span className="sr-only">Acme Inc</span>
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link href="/blogs" className="text-muted-foreground hover:text-foreground">
+                Blogs
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link href="/companies" className="text-muted-foreground hover:text-foreground">
+                Companies
+              </Link>
+            </SheetClose>
           </nav>
         </SheetContent>
       </Sheet>

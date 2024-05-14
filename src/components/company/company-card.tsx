@@ -18,7 +18,7 @@ export default function CompanyCard({ company }: any) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Card className="h-[100px] w-full cursor-pointer rounded-lg">
+        <Card className="h-[auto] w-full cursor-pointer rounded-lg">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
             <CardTitle className="text-base font-medium">{company?.code}</CardTitle>
           </CardHeader>
@@ -103,13 +103,19 @@ export default function CompanyCard({ company }: any) {
 
         <Separator />
 
-        {/* <DialogFooter className='flex-row justify-end gap-2'>
-          <Button type="button" variant="secondary" className='bg-green-700'>Buy</Button>
-          <Button type="button" variant="secondary" className='bg-red-700'>Sell</Button>
+        <DialogFooter className="flex-row justify-end gap-2">
+          <Button type="button" variant="secondary" className="bg-green-700">
+            Buy
+          </Button>
+          <Button type="button" variant="secondary" className="bg-red-700">
+            Sell
+          </Button>
           <DialogClose asChild>
-            <Button type="button" variant="secondary">Close</Button>
+            <Button type="button" variant="secondary">
+              Close
+            </Button>
           </DialogClose>
-        </DialogFooter> */}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

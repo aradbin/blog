@@ -15,11 +15,6 @@ export default function Page(params: any) {
 
   return (
     <section className="flex w-full flex-col gap-4">
-      <div className="flex flex-row-reverse">
-        <Button variant={'default'} onClick={() => console.log()} className="w-[100px]">
-          Create
-        </Button>
-      </div>
       <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {data?.pages?.map((page: any, pageIndex: number) => (
           <Fragment key={pageIndex}>

@@ -62,12 +62,12 @@ export default function CompanyCard({ company }: any) {
         <Separator />
 
         <div className="flex flex-row justify-evenly">
-          <div className="text-center">
+          <div className="w-1/2 text-center">
             <DialogTitle className={getEpsColor(company?.eps)}>{company?.eps}</DialogTitle>
             <DialogDescription>EPS</DialogDescription>
           </div>
           <Separator orientation="vertical" />
-          <div className="text-center">
+          <div className="w-1/2 text-center">
             <DialogTitle className={getPeColor(company?.pe)}>{company?.pe}</DialogTitle>
             <DialogDescription>P/E</DialogDescription>
           </div>
@@ -76,12 +76,12 @@ export default function CompanyCard({ company }: any) {
         <Separator />
 
         <div className="flex flex-row justify-evenly">
-          <div className="text-center">
+          <div className="w-1/2 text-center">
             <DialogTitle className={getPeColor(company?.pe)}>{company?.pe_audited}</DialogTitle>
             <DialogDescription>Audited P/E</DialogDescription>
           </div>
           <Separator orientation="vertical" />
-          <div className="text-center">
+          <div className="w-1/2 text-center">
             <DialogTitle className={getPeColor(company?.pe)}>{company?.pe_unaudited}</DialogTitle>
             <DialogDescription>Unaudited P/E</DialogDescription>
           </div>
@@ -90,12 +90,12 @@ export default function CompanyCard({ company }: any) {
         <Separator />
 
         <div className="flex flex-row justify-evenly">
-          <div className="text-center">
+          <div className="w-1/2 text-center">
             <DialogTitle className={getNavColor(company?.nav)}>{company?.nav}</DialogTitle>
             <DialogDescription>NAV</DialogDescription>
           </div>
           <Separator orientation="vertical" />
-          <div className="text-center">
+          <div className="w-1/2 text-center">
             <DialogTitle className={getPriceNavColor(company?.nav_price)}>{company?.nav_price}</DialogTitle>
             <DialogDescription>Price/NAV</DialogDescription>
           </div>

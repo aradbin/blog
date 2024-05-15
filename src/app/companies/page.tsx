@@ -33,7 +33,9 @@ export default function Page(params: any) {
       )
     }
     const filteredCompanies = initialCompanies?.filter(
-      (item: any) => item?.code?.toLowerCase().includes(keyword?.toLowerCase()),
+      (item: any) =>
+        item?.code?.toLowerCase().includes(keyword?.toLowerCase()) ||
+        item?.name?.toLowerCase().includes(keyword?.toLowerCase()),
     )
     setCompanies(filteredCompanies)
     setLoading(false)

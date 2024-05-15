@@ -20,7 +20,7 @@ import {
 import { Label } from '@/components/ui/label'
 
 export default function Page(params: any) {
-  const [filter, setFilter] = useState({ keyword: '', category: '', sector: '', index: '' })
+  const [filter, setFilter] = useState({ keyword: '', category: 'select', sector: 'select', index: 'select' })
   const [loading, setLoading] = useState(false)
   const [companies, setCompanies] = useState<any>([])
   const [categoryOptions, setCategoryOptions] = useState<string[]>([])
@@ -63,13 +63,13 @@ export default function Page(params: any) {
       ) {
         matched = false
       }
-      if (filter?.category && item?.category !== filter?.category) {
+      if (filter?.category !== 'select' && item?.category !== filter?.category) {
         matched = false
       }
-      if (filter?.sector && item?.sector !== filter?.sector) {
+      if (filter?.sector !== 'select' && item?.sector !== filter?.sector) {
         matched = false
       }
-      if (filter?.index && item?.indexes && !item?.indexes.includes(filter?.index)) {
+      if (filter?.index !== 'select' && item?.indexes && !item?.indexes.includes(filter?.index)) {
         matched = false
       }
       if (matched) {
@@ -207,7 +207,7 @@ export const SelectComponent = ({ label, value, onValueChange, options }: any) =
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value={null}>Select {label}</SelectItem>
+            <SelectItem value="select">Select {label}</SelectItem>
             {options?.map((item: string) => (
               <SelectItem key={item} value={item}>
                 {item}

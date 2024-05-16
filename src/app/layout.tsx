@@ -10,39 +10,12 @@ import Footer from '@/components/Footer'
 const defaultUrl = process.env.NEXT_PUBLIC_API_URL_LOCAL || 'http://localhost:3000'
 
 export const metadata = {
-  applicationName: 'Portfolio',
   metadataBase: new URL(defaultUrl),
   title: {
-    default: 'Portfolio',
     template: '%s | Portfolio',
+    default: 'Portfolio',
   },
-  description: 'Portfolio Management App',
-  manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'Portfolio',
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  openGraph: {
-    type: 'website',
-    siteName: 'Portfolio',
-    title: {
-      default: 'Portfolio',
-      template: '%s | Portfolio',
-    },
-    description: 'Portfolio Management App',
-  },
-  twitter: {
-    card: 'summary',
-    title: {
-      default: 'Portfolio',
-      template: '%s | Portfolio',
-    },
-    description: 'Portfolio Management App',
-  },
+  description: 'Portfolio',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

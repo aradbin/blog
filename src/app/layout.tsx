@@ -7,15 +7,42 @@ import ReactQueryProvider from '@/providers/ReactQueryProvider'
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
 
-const defaultUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
+const defaultUrl = process.env.NEXT_PUBLIC_API_URL_LOCAL || 'http://localhost:3000'
 
 export const metadata = {
+  applicationName: 'Portfolio',
   metadataBase: new URL(defaultUrl),
   title: {
-    template: '%s | Acme Dashboard',
-    default: 'Acme Dashboard',
+    default: 'Portfolio',
+    template: '%s | Portfolio',
   },
-  description: 'Acme Dashboard',
+  description: 'Portfolio Management App',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Portfolio',
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'Portfolio',
+    title: {
+      default: 'Portfolio',
+      template: '%s | Portfolio',
+    },
+    description: 'Portfolio Management App',
+  },
+  twitter: {
+    card: 'summary',
+    title: {
+      default: 'Portfolio',
+      template: '%s | Portfolio',
+    },
+    description: 'Portfolio Management App',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

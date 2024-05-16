@@ -1,8 +1,8 @@
-// 'use server'
+'use server'
 import axios, { AxiosResponse } from 'axios'
 import { stringifyRequestQuery } from './utils'
 
-const baseUrlLocal = process.env.NEXT_PUBLIC_API_KEY_LOCAL || 'http://localhost:3000'
+const baseUrlLocal = process.env.NEXT_PUBLIC_API_URL_LOCAL || 'http://localhost:3000'
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
 const apiKey = process.env.NEXT_PUBLIC_API_KEY || ''
 const headers = { apiKey: apiKey }

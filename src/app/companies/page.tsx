@@ -8,15 +8,7 @@ import CompanyCardSkeleton from '@/components/company/company-card-skeleton'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 
 export default function Page(params: any) {
@@ -69,7 +61,7 @@ export default function Page(params: any) {
       if (filter?.sector !== 'select' && item?.sector !== filter?.sector) {
         matched = false
       }
-      if (filter?.index !== 'select' && item?.indexes && !item?.indexes.includes(filter?.index)) {
+      if (filter?.index !== 'select' && !item?.indexes?.includes(filter?.index)) {
         matched = false
       }
       if (matched) {
@@ -84,7 +76,6 @@ export default function Page(params: any) {
 
   const sync = async () => {
     const response = await getRequestLocal(`/api/dse/sync`)
-    console.log(response?.companies[87])
     const currentCompanies = await getRequest(COMPANIES_URL)
 
     const companiesToUpdate: any[] = []

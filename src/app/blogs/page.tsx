@@ -10,7 +10,6 @@ import { Loader2 } from 'lucide-react'
 export default function Page(params: any) {
   const { data, fetchNextPage, isFetching, isFetchingNextPage }: any = useInfiniteQueryHook(BLOGS_URL, {
     ...params?.searchParams,
-    order: 'created_at.desc',
   })
 
   return (
@@ -18,13 +17,13 @@ export default function Page(params: any) {
       <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {data?.pages?.map((page: any, pageIndex: number) => (
           <Fragment key={pageIndex}>
-            {page?.map((item: any, index: number) => <BlogCard key={index} blog={item} />)}
+            {page?.data?.map((item: any, index: number) => <BlogCard key={index} blog={item} />)}
           </Fragment>
         ))}
         {(isFetching || isFetchingNextPage) && <BlogCardSkeleton count={20} />}
       </div>
       <div className="flex justify-center pt-4">
-        {data?.pages[data?.pages?.length - 1]?.length === 20 && (
+        {data?.pages[data?.pages?.length - 1]?.data?.length === 20 && (
           <Button
             variant={'default'}
             onClick={() => fetchNextPage()}

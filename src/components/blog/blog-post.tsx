@@ -7,7 +7,7 @@ import { Badge } from '../ui/badge'
 
 export default function BlogPost({ id }: any) {
   const { data, isFetching }: any = useQueryHook(BLOGS_URL, {
-    id: `eq.${id}`,
+    id: id,
   })
 
   return (
@@ -16,7 +16,7 @@ export default function BlogPost({ id }: any) {
         <BlogPostSkeleton />
       ) : (
         <>
-          {data?.map((item: any, index: number) => (
+          {data?.data?.map((item: any, index: number) => (
             <div key={index} className="flex flex-col gap-2">
               {item?.banner && (
                 <Image alt="Banner" src={item?.banner} className="h-[250px] w-full rounded-lg object-cover" />

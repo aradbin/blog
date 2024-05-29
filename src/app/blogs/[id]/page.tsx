@@ -1,10 +1,10 @@
 import { BLOGS_URL } from '@/helpers/apiEndpoints'
-import { getRequest } from '@/helpers/requests'
+import { getRequestFetch } from '@/helpers/requests'
 import { Metadata } from 'next'
 import BlogPost from '../../../components/blog/blog-post'
 
 export async function generateMetadata(params: any): Promise<Metadata> {
-  const item = await getRequest(`${BLOGS_URL}`, {
+  const item = await getRequestFetch(`${BLOGS_URL}`, {
     id: `eq.${params.params.id}`,
   })
   if (item?.length > 0) {

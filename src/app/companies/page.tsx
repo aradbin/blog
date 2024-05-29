@@ -31,10 +31,10 @@ export default function Page(params: any) {
     } else {
       initialCompanies = await getRequest(COMPANIES_URL, { ...params?.searchParams, order: 'code.asc' }).then(
         (response) => {
-          if (response?.length > 0) {
-            localStorage.setItem('companies', JSON.stringify(response))
+          if (response?.data?.length && response?.data?.length > 0) {
+            localStorage.setItem('companies', JSON.stringify(response?.data))
           }
-          return response
+          return response?.data || []
         },
       )
     }
@@ -82,7 +82,7 @@ export default function Page(params: any) {
     const companiesToCreate: any[] = []
 
     for (const company of response.companies) {
-      const matched = currentCompanies?.find((item: any) => item.code === company.code)
+      const matched = currentCompanies?.data?.find((item: any) => item.code === company.code)
 
       const payload = {
         market: 'dse',

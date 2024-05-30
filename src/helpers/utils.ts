@@ -54,3 +54,14 @@ export const getPriceNavColor = (value: number) => {
     return 'text-green-700'
   }
 }
+
+console.log('Fixed Income', 'Equity', 'Alternate Investment')
+console.log(
+  'National Saving Certificate/Sonchoy Potro',
+  'Treasury Bill/Bond',
+  'Fixed Deposit Receipt',
+  'Deposit Pension Scheme',
+)
+console.log('Stock/Mutual Fund(CE)', 'Mutual Fund(OE)')
+console.log('Real Estate', 'Startup/SME')
+console.log('Land', 'Plot', 'Flat')

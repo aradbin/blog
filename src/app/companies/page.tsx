@@ -1,5 +1,5 @@
 'use client'
-import { COMPANIES_URL } from '@/helpers/apiEndpoints'
+import { COMPANIES_URL, DSE_SYNC_URL } from '@/helpers/apiEndpoints'
 import { useEffect, useState } from 'react'
 import { createRequest, getRequest, getRequestLocal, upsertRequest } from '@/helpers/requests'
 import { FilterIcon, RefreshCw, Search } from 'lucide-react'
@@ -75,7 +75,7 @@ export default function Page(params: any) {
   }
 
   const sync = async () => {
-    const response = await getRequestLocal(`/api/dse/sync`)
+    const response = await getRequestLocal(DSE_SYNC_URL)
     const currentCompanies = await getRequest(COMPANIES_URL)
 
     const companiesToUpdate: any[] = []

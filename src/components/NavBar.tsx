@@ -11,27 +11,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { cookies } from 'next/headers'
-import { createServerClient } from '@/utils/supabase'
-import { redirect } from 'next/navigation'
 import ThemeToggle from './ThemeToggle'
+import { getUser, signOut } from '@/app/(auth)/actions'
 
 const NavBar = async () => {
-  const cookieStore = cookies()
-  const supabase = createServerClient(cookieStore)
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const signOut = async () => {
-    'use server'
-
-    const cookieStore = cookies()
-    const supabase = createServerClient(cookieStore)
-    await supabase.auth.signOut()
-    return redirect('/')
-  }
+  const user = await getUser()
 
   return (
     <header className="sticky top-0 z-50 flex h-16 w-full items-center gap-4 border-b border-border/40 bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-6">

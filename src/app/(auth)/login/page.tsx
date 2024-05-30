@@ -2,17 +2,11 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import LoginForm from './login-form'
-import { createServerClient } from '@/utils/supabase'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { getUser } from '../actions'
 
 export default async function Login() {
-  const cookieStore = cookies()
-  const supabase = createServerClient(cookieStore)
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getUser()
 
   if (user) {
     redirect('/')

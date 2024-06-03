@@ -28,7 +28,7 @@ const NavBar = async () => {
           Blogs
         </Link>
         <Link href="/companies" className="text-foreground transition-colors hover:text-foreground">
-          Companies
+          DSE
         </Link>
       </nav>
       <Sheet>
@@ -53,7 +53,7 @@ const NavBar = async () => {
             </SheetClose>
             <SheetClose asChild>
               <Link href="/companies" className="text-muted-foreground hover:text-foreground">
-                Companies
+                DSE
               </Link>
             </SheetClose>
           </nav>

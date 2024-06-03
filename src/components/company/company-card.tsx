@@ -20,20 +20,20 @@ export default function CompanyCard({ company }: any) {
       <DialogTrigger asChild>
         <Card className="h-[auto] w-full cursor-pointer rounded-lg shadow dark:bg-black">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3">
-            <CardTitle className="text-base font-medium">{company?.code}</CardTitle>
+            <CardTitle className="text-base font-medium">{company?.name}</CardTitle>
           </CardHeader>
           <Separator />
           <CardContent className="flex flex-col gap-1 p-3">
             {/* <div>
-              <Badge className="rounded-lg">{company?.category}</Badge>
+              <Badge className="rounded-lg">{company?.metadata?.category}</Badge>
             </div> */}
             {/* <div>
-              {company?.indexes?.map((item: string, index: number) => <Badge key={index} className="rounded-lg">{item}</Badge>)}
+              {company?.metadata?.indexes?.map((item: string, index: number) => <Badge key={index} className="rounded-lg">{item}</Badge>)}
             </div> */}
             {/* <div>
-              <Badge className="rounded-lg">{company?.sector}</Badge>
+              <Badge className="rounded-lg">{company?.metadata?.sector}</Badge>
             </div> */}
-            <div>৳ {company?.price}</div>
+            <div>৳ {company?.metadata?.price}</div>
           </CardContent>
           {/* <Separator /> */}
           {/* <CardFooter className="flex justify-between overflow-hidden p-4"></CardFooter> */}
@@ -42,12 +42,12 @@ export default function CompanyCard({ company }: any) {
 
       <DialogContent className="max-w-72 w-11/12 p-0 sm:w-full sm:max-w-sm md:max-w-md lg:max-w-lg">
         <DialogHeader className="items-center p-6 pb-2">
-          <DialogTitle>{company?.code}</DialogTitle>
-          <DialogDescription>{company?.name}</DialogDescription>
+          <DialogTitle>{company?.name}</DialogTitle>
+          <DialogDescription>{company?.metadata?.full_name}</DialogDescription>
           <div className="flex flex-row justify-center gap-1 sm:justify-start">
-            {company?.category && <Badge className="rounded-lg">{company?.category}</Badge>}
-            {company?.sector && <Badge className="rounded-lg">{company?.sector}</Badge>}
-            {company?.indexes?.map((item: string, index: number) => (
+            {company?.metadata?.category && <Badge className="rounded-lg">{company?.metadata?.category}</Badge>}
+            {company?.metadata?.sector && <Badge className="rounded-lg">{company?.metadata?.sector}</Badge>}
+            {company?.metadata?.indexes?.map((item: string, index: number) => (
               <Badge key={index} className="rounded-lg">
                 {item}
               </Badge>
@@ -57,18 +57,18 @@ export default function CompanyCard({ company }: any) {
 
         <Separator />
 
-        <DialogTitle className="text-center">৳ {company?.price}</DialogTitle>
+        <DialogTitle className="text-center">৳ {company?.metadata?.price}</DialogTitle>
 
         <Separator />
 
         <div className="flex flex-row justify-evenly">
           <div className="w-1/2 text-center">
-            <DialogTitle className={getEpsColor(company?.eps)}>{company?.eps}</DialogTitle>
+            <DialogTitle className={getEpsColor(company?.metadata?.eps)}>{company?.metadata?.eps}</DialogTitle>
             <DialogDescription>EPS</DialogDescription>
           </div>
           <Separator orientation="vertical" />
           <div className="w-1/2 text-center">
-            <DialogTitle className={getPeColor(company?.pe)}>{company?.pe}</DialogTitle>
+            <DialogTitle className={getPeColor(company?.metadata?.pe)}>{company?.metadata?.pe}</DialogTitle>
             <DialogDescription>P/E</DialogDescription>
           </div>
         </div>
@@ -77,12 +77,12 @@ export default function CompanyCard({ company }: any) {
 
         <div className="flex flex-row justify-evenly">
           <div className="w-1/2 text-center">
-            <DialogTitle className={getPeColor(company?.pe)}>{company?.pe_audited}</DialogTitle>
+            <DialogTitle className={getPeColor(company?.metadata?.pe)}>{company?.metadata?.pe_audited}</DialogTitle>
             <DialogDescription>Audited P/E</DialogDescription>
           </div>
           <Separator orientation="vertical" />
           <div className="w-1/2 text-center">
-            <DialogTitle className={getPeColor(company?.pe)}>{company?.pe_unaudited}</DialogTitle>
+            <DialogTitle className={getPeColor(company?.metadata?.pe)}>{company?.metadata?.pe_unaudited}</DialogTitle>
             <DialogDescription>Unaudited P/E</DialogDescription>
           </div>
         </div>
@@ -91,12 +91,14 @@ export default function CompanyCard({ company }: any) {
 
         <div className="flex flex-row justify-evenly">
           <div className="w-1/2 text-center">
-            <DialogTitle className={getNavColor(company?.nav)}>{company?.nav}</DialogTitle>
+            <DialogTitle className={getNavColor(company?.metadata?.nav)}>{company?.metadata?.nav}</DialogTitle>
             <DialogDescription>NAV</DialogDescription>
           </div>
           <Separator orientation="vertical" />
           <div className="w-1/2 text-center">
-            <DialogTitle className={getPriceNavColor(company?.nav_price)}>{company?.nav_price}</DialogTitle>
+            <DialogTitle className={getPriceNavColor(company?.metadata?.nav_price)}>
+              {company?.metadata?.nav_price}
+            </DialogTitle>
             <DialogDescription>Price/NAV</DialogDescription>
           </div>
         </div>

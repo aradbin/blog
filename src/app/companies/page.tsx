@@ -1,5 +1,5 @@
 'use client'
-import { COMPANIES_URL, DSE_SYNC_URL } from '@/helpers/apiEndpoints'
+import { ASSETS_URL, INSTRUMENTS_URL, DSE_SYNC_URL } from '@/helpers/apiEndpoints'
 import { useEffect, useState } from 'react'
 import { createRequest, getRequest, getRequestLocal, upsertRequest } from '@/helpers/requests'
 import { FilterIcon, RefreshCw, Search } from 'lucide-react'
@@ -29,7 +29,7 @@ export default function Page(params: any) {
     if (localStorage.getItem('companies') && !force) {
       initialCompanies = JSON.parse(localStorage.getItem('companies') || '[]')
     } else {
-      initialCompanies = await getRequest(COMPANIES_URL, { ...params?.searchParams, order: 'code.asc' }).then(
+      initialCompanies = await getRequest(INSTRUMENTS_URL, { ...params?.searchParams, order: 'name.asc' }).then(
         (response) => {
           if (response?.data?.length && response?.data?.length > 0) {
             localStorage.setItem('companies', JSON.stringify(response?.data))
@@ -41,27 +41,27 @@ export default function Page(params: any) {
     const categories: string[] = []
     const sectors: string[] = []
     const filteredCompanies = initialCompanies?.filter((item: any) => {
-      if (item.category && !categories.includes(item.category)) {
-        categories.push(item.category)
+      if (item?.metadata?.category && !categories.includes(item?.metadata?.category)) {
+        categories.push(item?.metadata?.category)
       }
-      if (item.sector && !sectors.includes(item.sector)) {
-        sectors.push(item.sector)
+      if (item?.metadata?.sector && !sectors.includes(item?.metadata?.sector)) {
+        sectors.push(item?.metadata?.sector)
       }
       let matched = true
       if (
         filter?.keyword &&
-        !item?.code?.toLowerCase().includes(filter?.keyword?.toLowerCase()) &&
-        !item?.name?.toLowerCase().includes(filter?.keyword?.toLowerCase())
+        !item?.name?.toLowerCase().includes(filter?.keyword?.toLowerCase()) &&
+        !item?.metadata?.full_name?.toLowerCase().includes(filter?.keyword?.toLowerCase())
       ) {
         matched = false
       }
-      if (filter?.category !== 'select' && item?.category !== filter?.category) {
+      if (filter?.category !== 'select' && item?.metadata?.category !== filter?.category) {
         matched = false
       }
-      if (filter?.sector !== 'select' && item?.sector !== filter?.sector) {
+      if (filter?.sector !== 'select' && item?.metadata?.sector !== filter?.sector) {
         matched = false
       }
-      if (filter?.index !== 'select' && !item?.indexes?.includes(filter?.index)) {
+      if (filter?.index !== 'select' && !item?.metadata?.indexes?.includes(filter?.index)) {
         matched = false
       }
       if (matched) {
@@ -75,44 +75,50 @@ export default function Page(params: any) {
   }
 
   const sync = async () => {
-    const response = await getRequestLocal(DSE_SYNC_URL)
-    const currentCompanies = await getRequest(COMPANIES_URL)
+    const assets = await getRequest(ASSETS_URL)
+    const dse = assets?.data?.find((item: any) => item?.metadata?.slug === 'dse')
+    if (dse) {
+      const response = await getRequestLocal(DSE_SYNC_URL)
+      const currentCompanies = await getRequest(INSTRUMENTS_URL)
 
-    const companiesToUpdate: any[] = []
-    const companiesToCreate: any[] = []
+      const companiesToUpdate: any[] = []
+      const companiesToCreate: any[] = []
 
-    for (const company of response.companies) {
-      const matched = currentCompanies?.data?.find((item: any) => item.code === company.code)
+      for (const company of response.companies) {
+        const matched = currentCompanies?.data?.find((item: any) => item.name === company.code)
 
-      const payload = {
-        market: 'dse',
-        code: company?.code,
-        price: parseFloat(company?.LTP) || 0,
-        category: company?.category,
-        indexes: company?.indexes || null,
-        name: company?.FullName || null,
-        sector: company?.BusinessSegment || null,
-        eps: company?.Eps || 0,
-        pe: company?.PE || 0,
-        pe_audited: company?.AuditedPE || 0,
-        pe_unaudited: company?.UnAuditedPE || 0,
-        nav: company?.NAV || 0,
-        nav_price: company?.NavPrice || 0,
+        const payload = {
+          asset_id: dse?.id,
+          name: company?.code,
+          metadata: {
+            price: parseFloat(company?.LTP) || 0,
+            category: company?.category,
+            indexes: company?.indexes || null,
+            full_name: company?.FullName || null,
+            sector: company?.BusinessSegment || null,
+            eps: company?.Eps || 0,
+            pe: company?.PE || 0,
+            pe_audited: company?.AuditedPE || 0,
+            pe_unaudited: company?.UnAuditedPE || 0,
+            nav: company?.NAV || 0,
+            nav_price: company?.NavPrice || 0,
+          },
+        }
+
+        if (matched) {
+          companiesToUpdate.push({
+            id: matched.id,
+            ...payload,
+          })
+        } else {
+          companiesToCreate.push(payload)
+        }
       }
 
-      if (matched) {
-        companiesToUpdate.push({
-          id: matched.id,
-          ...payload,
-        })
-      } else {
-        companiesToCreate.push(payload)
-      }
+      await upsertRequest(INSTRUMENTS_URL, companiesToUpdate)
+      await createRequest(INSTRUMENTS_URL, companiesToCreate)
+      getCompanies(true)
     }
-
-    await upsertRequest(COMPANIES_URL, companiesToUpdate)
-    await createRequest(COMPANIES_URL, companiesToCreate)
-    getCompanies(true)
   }
 
   return (

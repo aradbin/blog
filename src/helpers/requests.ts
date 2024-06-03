@@ -12,8 +12,9 @@ const headers = { apiKey: apiKey }
 axios.defaults.baseURL = baseUrl
 axios.defaults.headers.common['apiKey'] = apiKey
 
+const cookieStore = cookies()
+
 export async function getRequest(url: string, query: any = {}) {
-  const cookieStore = cookies()
   const supabase = createServerClient(cookieStore).from(url).select('*')
 
   if (query?.hasOwnProperty('limit') && query?.hasOwnProperty('offset')) {
@@ -70,9 +71,14 @@ export async function getRequestLocal(url: string, query: any = {}) {
 }
 
 export async function createRequest(url: string, values: any) {
-  return await axios.post(url, values).catch((error) => {
-    catchError(error)
-  })
+  const supabase = createServerClient(cookieStore)
+  const response = await supabase.from(url).insert(values)
+
+  if (response?.error) {
+    catchError(response?.error)
+  }
+
+  return response
 }
 
 export async function createRequestWithFile(url: string, values: any) {
@@ -93,40 +99,15 @@ export async function updateRequest(url: string, values: any) {
   })
 }
 
-// export async function upsertRequest(url: string, values: any) {
-//   return await axios
-//     .post(url, values, {
-//       headers: {
-//         Prefer: 'resolution=merge-duplicates',
-//       },
-//     })
-//     .catch((error) => {
-//       catchError(error)
-//     })
-// }
-
 export async function upsertRequest(url: string, values: any) {
-  const headers = new Headers({
-    'Content-Type': 'application/json', // Assuming JSON data
-    Prefer: 'resolution=merge-duplicates',
-    apiKey: `Bearer ${apiKey}`, // Assuming API key authentication
-  })
+  const supabase = createServerClient(cookieStore)
+  const response = await supabase.from(url).upsert(values)
 
-  try {
-    const response = await fetch(baseUrl + url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(values),
-    })
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    return await response.json() // Parse the response as JSON
-  } catch (error) {
-    catchError(error) // Call your existing error handling function
+  if (response?.error) {
+    catchError(response?.error)
   }
+
+  return response
 }
 
 export async function deleteRequest(url: string) {

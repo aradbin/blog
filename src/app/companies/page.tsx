@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 export default function Page(params: any) {
   const [filter, setFilter] = useState({ keyword: '', category: 'select', sector: 'select', index: 'select' })
   const [loading, setLoading] = useState(false)
+  const [syncLoading, setSyncLoading] = useState(false)
   const [companies, setCompanies] = useState<any>([])
   const [categoryOptions, setCategoryOptions] = useState<string[]>([])
   const [sectorOptions, setSectorOptions] = useState<string[]>([])
@@ -75,6 +76,7 @@ export default function Page(params: any) {
   }
 
   const sync = async () => {
+    setSyncLoading(true)
     const assets = await getRequest(ASSETS_URL)
     const dse = assets?.data?.find((item: any) => item?.metadata?.slug === 'dse')
     if (dse) {
@@ -117,6 +119,7 @@ export default function Page(params: any) {
 
       await upsertRequest(INSTRUMENTS_URL, companiesToUpdate)
       await createRequest(INSTRUMENTS_URL, companiesToCreate)
+      setSyncLoading(false)
       getCompanies(true)
     }
   }
@@ -183,7 +186,7 @@ export default function Page(params: any) {
         {loading && <CompanyCardSkeleton count={20} />}
       </div>
       <Button variant={'default'} size="icon" onClick={() => sync()} className="fixed bottom-3 right-3 rounded-full">
-        <RefreshCw />
+        <RefreshCw className={syncLoading ? 'animate-spin' : ''} />
       </Button>
     </section>
   )

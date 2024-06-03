@@ -12,9 +12,8 @@ const headers = { apiKey: apiKey }
 axios.defaults.baseURL = baseUrl
 axios.defaults.headers.common['apiKey'] = apiKey
 
-const cookieStore = cookies()
-
 export async function getRequest(url: string, query: any = {}) {
+  const cookieStore = cookies()
   const supabase = createServerClient(cookieStore).from(url).select('*')
 
   if (query?.hasOwnProperty('limit') && query?.hasOwnProperty('offset')) {
@@ -71,6 +70,7 @@ export async function getRequestLocal(url: string, query: any = {}) {
 }
 
 export async function createRequest(url: string, values: any) {
+  const cookieStore = cookies()
   const supabase = createServerClient(cookieStore)
   const response = await supabase.from(url).insert(values)
 
@@ -100,6 +100,7 @@ export async function updateRequest(url: string, values: any) {
 }
 
 export async function upsertRequest(url: string, values: any) {
+  const cookieStore = cookies()
   const supabase = createServerClient(cookieStore)
   const response = await supabase.from(url).upsert(values)
 

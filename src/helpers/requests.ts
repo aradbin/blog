@@ -27,8 +27,7 @@ export async function getRequest(url: string, query: any = {}) {
   }
 
   if (query?.hasOwnProperty('id')) {
-    console.log(query?.id)
-    supabase.eq('id', query?.id)
+    supabase.eq('id', query?.id).single()
   }
 
   const response = await supabase

@@ -30,7 +30,7 @@ export default function Page(params: any) {
     if (localStorage.getItem('companies') && !force) {
       initialCompanies = JSON.parse(localStorage.getItem('companies') || '[]')
     } else {
-      initialCompanies = await getRequest(INSTRUMENTS_URL, { ...params?.searchParams, order: 'name.asc' }).then(
+      initialCompanies = await getRequest(INSTRUMENTS_URL, { ...params?.searchParams, order: 'name' }).then(
         (response) => {
           if (response?.data?.length && response?.data?.length > 0) {
             localStorage.setItem('companies', JSON.stringify(response?.data))

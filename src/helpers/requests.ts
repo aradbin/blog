@@ -14,16 +14,36 @@ axios.defaults.headers.common['apiKey'] = apiKey
 
 export async function getRequest(url: string, query: any = {}) {
   const cookieStore = cookies()
-  const supabase = createServerClient(cookieStore).from(url).select('*')
 
-  if (query?.hasOwnProperty('limit') && query?.hasOwnProperty('offset')) {
-    supabase.range(query?.offset, query?.offset + query?.limit - 1)
+  let select = '*'
+  if (query?.hasOwnProperty('select')) {
+    select = query?.select
+  }
+
+  const supabase = createServerClient(cookieStore).from(url).select(select)
+
+  if (query?.hasOwnProperty('filters') && Array.isArray(query?.filters)) {
+    query?.filters.forEach((filter: any) => {
+      if (filter?.type === 'is') {
+        supabase.is(filter?.column, filter?.value)
+      }
+      if (filter?.type === 'eq') {
+        supabase.eq(filter?.column, filter?.value)
+      }
+      if (filter?.type === 'neq') {
+        supabase.neq(filter?.column, filter?.value)
+      }
+    })
   }
 
   if (query?.hasOwnProperty('order')) {
-    supabase.order(query?.order?.split('.')[0], { ascending: query?.order?.split('.')[1] === 'desc' ? false : true })
+    supabase.order(query?.order, { ascending: query?.sort === 'desc' ? false : true })
   } else {
     supabase.order('created_at', { ascending: false })
+  }
+
+  if (query?.hasOwnProperty('limit') && query?.hasOwnProperty('offset')) {
+    supabase.range(query?.offset, query?.offset + query?.limit - 1)
   }
 
   if (query?.hasOwnProperty('id')) {
@@ -37,6 +57,14 @@ export async function getRequest(url: string, query: any = {}) {
   }
 
   return response
+}
+
+export async function getRequestLocal(url: string, query: any = {}) {
+  return await fetch(`${baseUrlLocal}${url}${Object.keys(query).length > 0 ? `?${stringifyRequestQuery(query)}` : ''}`)
+    .then((response) => response.json())
+    .catch((error) => {
+      catchError(error)
+    })
 }
 
 export async function getRequestFetch(url: string, query: any = {}) {
@@ -55,14 +83,6 @@ export async function getRequestAxios(url: string, query: any = {}) {
     .then((d: AxiosResponse<any>) => {
       return d.data
     })
-    .catch((error) => {
-      catchError(error)
-    })
-}
-
-export async function getRequestLocal(url: string, query: any = {}) {
-  return await fetch(`${baseUrlLocal}${url}${Object.keys(query).length > 0 ? `?${stringifyRequestQuery(query)}` : ''}`)
-    .then((response) => response.json())
     .catch((error) => {
       catchError(error)
     })
@@ -117,7 +137,7 @@ export async function deleteRequest(url: string) {
 }
 
 const catchError = (error: any) => {
-  console.log(error)
+  console.log('catchError', error)
   // if(error?.response?.data?.statusCode===401){
   //   toast.error(error?.response?.data?.message)
   //   window.location.replace('/auth')

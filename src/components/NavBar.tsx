@@ -27,6 +27,9 @@ const NavBar = async () => {
         <Link href="/blogs" className="text-foreground transition-colors hover:text-foreground">
           Blogs
         </Link>
+        <Link href="/portfolio" className="text-foreground transition-colors hover:text-foreground">
+          Portfolio
+        </Link>
         <Link href="/companies" className="text-foreground transition-colors hover:text-foreground">
           DSE
         </Link>
@@ -49,6 +52,11 @@ const NavBar = async () => {
             <SheetClose asChild>
               <Link href="/blogs" className="text-muted-foreground hover:text-foreground">
                 Blogs
+              </Link>
+            </SheetClose>
+            <SheetClose asChild>
+              <Link href="/portfolio" className="text-muted-foreground hover:text-foreground">
+                Portfolio
               </Link>
             </SheetClose>
             <SheetClose asChild>
@@ -83,7 +91,7 @@ const NavBar = async () => {
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <Link href="/portfolio">Portfolio</Link>
+                <Link href="/portfolio">My Portfolio</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>

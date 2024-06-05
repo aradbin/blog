@@ -2,10 +2,10 @@ import { GeistSans } from 'geist/font/sans'
 import ThemeProvider from '@/providers/ThemeProvider'
 import NextTopLoader from 'nextjs-toploader'
 import './globals.css'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import ReactQueryProvider from '@/providers/ReactQueryProvider'
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
+import { Toaster } from '@/components/ui/sonner'
 
 const defaultUrl = process.env.NEXT_PUBLIC_API_URL_LOCAL || 'http://localhost:3000'
 
@@ -29,6 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="flex flex-col items-center p-4 md:p-6 lg:p-8">{children}</main>
             {/* <Footer /> */}
             {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+            <Toaster richColors />
           </ReactQueryProvider>
         </ThemeProvider>
       </body>

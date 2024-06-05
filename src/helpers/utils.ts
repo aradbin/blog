@@ -55,7 +55,7 @@ export const getPriceNavColor = (value: number) => {
   }
 }
 
-console.log('Fixed Income', 'Equity', 'Alternate Investment')
+console.log('Fixed Income/Cash', 'Equity', 'Alternate Investment')
 console.log(
   'National Saving Certificate/Sonchoy Potro',
   'Treasury Bill/Bond',

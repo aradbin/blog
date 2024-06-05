@@ -1,15 +1,7 @@
-import {
-  UseInfiniteQueryResult,
-  UseQueryResult,
-  useInfiniteQuery,
-  useQuery,
-} from '@tanstack/react-query'
-import { getRequest } from './requests'
+import { UseInfiniteQueryResult, UseQueryResult, useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { getRequest, getRequestLocal } from './requests'
 
-export function useQueryHook(
-  url: string,
-  query: {} = {},
-): UseQueryResult<{ data: any }, Error> {
+export function useQueryHook(url: string, query: {} = {}): UseQueryResult<{ data: any }, Error> {
   return useQuery({
     queryKey: [url, query],
     queryFn: async () => {
@@ -23,13 +15,31 @@ export function useQueryHook(
   })
 }
 
+export function useQueryHookLocal(url: string, query: {} = {}): UseQueryResult<{ data: any }, Error> {
+  return useQuery({
+    queryKey: [url, query],
+    queryFn: async () => {
+      try {
+        const data = await getRequestLocal(url, query)
+        return data
+      } catch (error) {
+        throw error
+      }
+    },
+  })
+}
+
 export function useInfiniteQueryHook(
   url: string,
   query: {} = {},
+  queryFn: any = null,
 ): UseInfiniteQueryResult<{ data: any }, Error> {
   return useInfiniteQuery({
     queryKey: [url, query],
-    queryFn: processRequestInfinity,
+    queryFn: ({ pageParam }: any) => {
+      const { url, query } = pageParam
+      return queryFn ? queryFn(url, query) : getRequest(url, query)
+    },
     initialPageParam: { url: url, query: { limit: 20, offset: 0, ...query } },
     getNextPageParam: (_, __, lastPageParam) => {
       return {
@@ -41,9 +51,4 @@ export function useInfiniteQueryHook(
       }
     },
   })
-}
-
-export async function processRequestInfinity({ pageParam }: any) {
-  const { url, query } = pageParam
-  return getRequest(url, query)
 }

@@ -78,7 +78,7 @@ export default function Page(params: any) {
   const sync = async () => {
     setSyncLoading(true)
     const assets = await getRequest(ASSETS_URL)
-    const dse = assets?.data?.find((item: any) => item?.metadata?.slug === 'dse')
+    const dse: any = assets?.data?.find((item: any) => item?.metadata?.slug === 'dse')
     if (dse) {
       const response = await getRequestLocal(DSE_SYNC_URL)
       const currentCompanies = await getRequest(INSTRUMENTS_URL)
@@ -87,7 +87,7 @@ export default function Page(params: any) {
       const companiesToCreate: any[] = []
 
       for (const company of response.companies) {
-        const matched = currentCompanies?.data?.find((item: any) => item.name === company.code)
+        const matched: any = currentCompanies?.data?.find((item: any) => item.name === company.code)
 
         const payload = {
           asset_id: dse?.id,

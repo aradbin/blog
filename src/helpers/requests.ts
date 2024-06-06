@@ -20,7 +20,9 @@ export async function getRequest(url: string, query: any = {}) {
     select = query?.select
   }
 
-  const supabase = createServerClient(cookieStore).from(url).select(select)
+  const supabase = createServerClient(cookieStore)
+    .from(url)
+    .select(select, query?.count || {})
 
   if (query?.hasOwnProperty('filters') && Array.isArray(query?.filters)) {
     query?.filters.forEach((filter: any) => {

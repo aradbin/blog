@@ -1,0 +1,86 @@
+'use client'
+import { useQueryHook } from '@/helpers/useQueryHook'
+import { getCoreRowModel, useReactTable, flexRender } from '@tanstack/react-table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import { Button } from '../ui/button'
+import { useState } from 'react'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+
+export function DataTable({ columns, url, query }: any) {
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 20,
+  })
+
+  const { data, isFetching }: any = useQueryHook(url, {
+    ...query,
+    limit: pagination.pageSize,
+    offset: pagination.pageIndex * pagination.pageSize,
+  })
+
+  const table = useReactTable({
+    columns,
+    data: data?.data || [],
+    getCoreRowModel: getCoreRowModel(),
+    rowCount: data?.count || 0,
+    manualPagination: true,
+    state: {
+      pagination,
+    },
+    onPaginationChange: setPagination,
+  })
+
+  return (
+    <>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header: any) => {
+                  return (
+                    <TableHead key={header.id} className={header?.column?.columnDef?.right ? 'text-right' : ''}>
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    </TableHead>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
+                  {row.getVisibleCells().map((cell: any) => (
+                    <TableCell key={cell.id} className={cell?.column?.columnDef?.right ? 'text-right' : ''}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          <ArrowLeft />
+        </Button>
+        <Button variant="outline" size="icon" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <ArrowRight />
+        </Button>
+      </div>
+    </>
+  )
+}

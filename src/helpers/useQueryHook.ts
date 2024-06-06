@@ -1,5 +1,6 @@
 import { UseInfiniteQueryResult, UseQueryResult, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { getRequest, getRequestLocal } from './requests'
+import { toast } from 'sonner'
 
 export function useQueryHook(url: string, query: {} = {}): UseQueryResult<{ data: any }, Error> {
   return useQuery({
@@ -7,8 +8,12 @@ export function useQueryHook(url: string, query: {} = {}): UseQueryResult<{ data
     queryFn: async () => {
       try {
         const data = await getRequest(url, query)
+        if (data?.error) {
+          toast.error('Something went wrong. Please try again')
+        }
         return data
       } catch (error) {
+        toast.error('Something went wrong. Please try again')
         throw error
       }
     },

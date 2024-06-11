@@ -1,3 +1,7 @@
+import { format } from 'date-fns'
+import { getRequest } from './requests'
+import { INSTRUMENTS_URL } from './apiEndpoints'
+
 function isNotEmpty(obj: unknown) {
   return obj !== undefined && obj !== null && obj !== ''
 }
@@ -17,6 +21,31 @@ export const stringifyRequestQuery = (values: {} = {}) => {
 
 export const firstLetterUpperCase = (string: string) => {
   return string.charAt(0).toUpperCase() + string.slice(1)
+}
+
+export const formatDate = (date: any) => {
+  return format(date, 'do LLL, yyyy')
+}
+
+export const getInstrumentOptions = async () => {
+  let initialCompanies = []
+  if (localStorage.getItem('companies')) {
+    initialCompanies = JSON.parse(localStorage.getItem('companies') || '[]')
+  } else {
+    initialCompanies = await getRequest(INSTRUMENTS_URL, { order: 'name' }).then((response) => {
+      if (response?.data?.length && response?.data?.length > 0) {
+        localStorage.setItem('companies', JSON.stringify(response?.data))
+      }
+      return response?.data || []
+    })
+  }
+
+  const options = initialCompanies.map((company: any) => ({
+    value: company.name,
+    label: company.name,
+  }))
+
+  return options
 }
 
 export const getEpsColor = (value: number) => {

@@ -3,9 +3,9 @@ import { BLOGS_URL } from '@/helpers/apiEndpoints'
 import BlogCard from '../../components/blog/blog-card'
 import { Fragment } from 'react'
 import { Button } from '@/components/ui/button'
-import { useInfiniteQueryHook } from '@/helpers/useQueryHook'
 import BlogCardSkeleton from '../../components/blog/blog-card-skeleton'
 import { Loader2 } from 'lucide-react'
+import { useInfiniteQueryHook } from '@/helpers/hooks'
 
 export default function Page(params: any) {
   const { data, fetchNextPage, isFetching, isFetchingNextPage }: any = useInfiniteQueryHook(BLOGS_URL, {

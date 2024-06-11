@@ -1,14 +1,26 @@
 'use client'
 
+import { firstLetterUpperCase, formatDate } from '@/helpers/utils'
+import { format, parseISO } from 'date-fns'
+
 export const TransactionTableColumns = [
   {
-    accessorKey: 'instruments.name',
-    header: 'Name',
+    accessorKey: 'date',
+    header: 'Date',
+    cell: ({ row }: any) => formatDate(row?.original?.date),
   },
   {
-    accessorKey: 'price',
-    header: 'Price',
-    cell: ({ row }: any) => <div className="text-right">{row?.original?.price}</div>,
+    accessorKey: 'type',
+    header: 'Type',
+    cell: ({ row }: any) => firstLetterUpperCase(row?.original?.type),
+  },
+  {
+    accessorKey: 'instrument',
+    header: 'Instrument',
+  },
+  {
+    accessorKey: 'amount',
+    header: 'Amount',
     right: true,
   },
   {
@@ -19,7 +31,7 @@ export const TransactionTableColumns = [
   {
     accessorKey: 'subtotal',
     header: 'Sub Total',
-    cell: ({ row }: any) => row?.original?.price * row?.original?.quantity,
+    cell: ({ row }: any) => row?.original?.amount * row?.original?.quantity,
     right: true,
   },
 ]

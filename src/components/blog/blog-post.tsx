@@ -1,9 +1,9 @@
 'use client'
 import Image from 'next/image'
-import { useQueryHook } from '@/helpers/useQueryHook'
 import { BLOGS_URL } from '@/helpers/apiEndpoints'
 import BlogPostSkeleton from './blog-post-skeleton'
 import { Badge } from '../ui/badge'
+import { useQueryHook } from '@/helpers/hooks'
 
 export default function BlogPost({ id }: any) {
   const { data, isFetching }: any = useQueryHook(BLOGS_URL, {

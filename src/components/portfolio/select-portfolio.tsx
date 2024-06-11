@@ -1,10 +1,10 @@
 'use client'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PORTFOLIO_URL } from '@/helpers/apiEndpoints'
-import { useQueryHook } from '@/helpers/useQueryHook'
 import { RefreshCw } from 'lucide-react'
 import { useEffect } from 'react'
 import { Skeleton } from '../ui/skeleton'
+import { useQueryHook } from '@/helpers/hooks'
 
 const SelectPortfolio = ({ value, onChangeHandler }: any) => {
   const { data, isFetching }: any = useQueryHook(PORTFOLIO_URL)

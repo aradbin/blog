@@ -140,19 +140,4 @@ export async function deleteRequest(url: string) {
 
 const catchError = (error: any) => {
   console.log('catchError', error)
-  // if(error?.response?.data?.statusCode===401){
-  //   toast.error(error?.response?.data?.message)
-  //   window.location.replace('/auth')
-  // }else if(error?.response?.data?.statusCode===409){
-  //   toast.error(error?.response?.data?.message)
-  // }else if(error?.response?.data?.statusCode===400){
-  //   error?.response?.data?.message?.map((item: string) => {
-  //     toast.error(item)
-  //   })
-  // }else if(error?.response?.data?.statusCode===404){
-  //   toast.error(error?.response?.data?.message)
-  // }else{
-  //   toast.error('Something went wrong. Please try again')
-  // }
-  // toast.error(error?.response?.data?.message)
 }

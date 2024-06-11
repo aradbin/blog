@@ -1,17 +1,19 @@
 'use client'
-import { useQueryHook } from '@/helpers/useQueryHook'
 import { getCoreRowModel, useReactTable, flexRender } from '@tanstack/react-table'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Button } from '../ui/button'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { Badge } from '../ui/badge'
+import { useQueryHook } from '@/helpers/hooks'
+import { useQueryClient } from '@tanstack/react-query'
 
-export function DataTable({ columns, url, query }: any) {
+export function DataTable({ columns, url, query, refetch = 1 }: any) {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 20,
   })
-
+  const queryClient = useQueryClient()
   const { data, isFetching }: any = useQueryHook(url, {
     ...query,
     limit: pagination.pageSize,
@@ -29,6 +31,16 @@ export function DataTable({ columns, url, query }: any) {
     },
     onPaginationChange: setPagination,
   })
+
+  useEffect(() => {
+    if (refetch > 1) {
+      if (pagination.pageIndex > 0) {
+        setPagination({ pageIndex: 0, pageSize: 20 })
+      } else {
+        queryClient.refetchQueries({ queryKey: [url, query] })
+      }
+    }
+  }, [refetch])
 
   return (
     <>
@@ -68,18 +80,25 @@ export function DataTable({ columns, url, query }: any) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          <ArrowLeft />
-        </Button>
-        <Button variant="outline" size="icon" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-          <ArrowRight />
-        </Button>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start">
+          <Badge variant="outline" className="rounded">
+            Total: {data?.count || 0}
+          </Badge>
+        </div>
+        <div className="flex items-center justify-end space-x-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            <ArrowLeft />
+          </Button>
+          <Button variant="outline" size="icon" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            <ArrowRight />
+          </Button>
+        </div>
       </div>
     </>
   )

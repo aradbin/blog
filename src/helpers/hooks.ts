@@ -1,4 +1,4 @@
-import { UseInfiniteQueryResult, UseQueryResult, useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query'
+import { UseInfiniteQueryResult, UseQueryResult, useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import { createRequest, getRequest, getRequestLocal } from './requests'
 import { toast } from 'sonner'
 import { useState } from 'react'

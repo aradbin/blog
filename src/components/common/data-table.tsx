@@ -7,6 +7,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import { useQueryHook } from '@/helpers/hooks'
 import { useQueryClient } from '@tanstack/react-query'
+import { Skeleton } from '../ui/skeleton'
 
 export function DataTable({ columns, url, query, refetch = 1 }: any) {
   const [pagination, setPagination] = useState({
@@ -35,7 +36,7 @@ export function DataTable({ columns, url, query, refetch = 1 }: any) {
   useEffect(() => {
     if (refetch > 1) {
       if (pagination.pageIndex > 0) {
-        setPagination({ pageIndex: 0, pageSize: 20 })
+        setPagination({ pageIndex: 0, pageSize: 2 })
       } else {
         queryClient.refetchQueries({ queryKey: [url, query] })
       }
@@ -71,11 +72,25 @@ export function DataTable({ columns, url, query, refetch = 1 }: any) {
                 </TableRow>
               ))
             ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
+              <>
+                {isFetching ? (
+                  <>
+                    {Array.from({ length: pagination.pageSize }).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell colSpan={columns.length} className=" text-center">
+                          <Skeleton className="h-[20px] w-full " />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </>
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </>
             )}
           </TableBody>
         </Table>

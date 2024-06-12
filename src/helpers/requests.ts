@@ -114,10 +114,16 @@ export async function createRequestWithFile(url: string, values: any) {
     })
 }
 
-export async function updateRequest(url: string, values: any) {
-  return await axios.patch(url, values).catch((error) => {
-    catchError(error)
-  })
+export async function updateRequest(url: string, id: number, values: any) {
+  const cookieStore = cookies()
+  const supabase = createServerClient(cookieStore)
+  const response = await supabase.from(url).update(values).eq('id', id)
+
+  if (response?.error) {
+    catchError(response?.error)
+  }
+
+  return response
 }
 
 export async function upsertRequest(url: string, values: any) {

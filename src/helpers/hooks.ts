@@ -1,5 +1,5 @@
 import { UseInfiniteQueryResult, UseQueryResult, useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { createRequest, getRequest, getRequestLocal } from './requests'
+import { createRequest, getRequest, getRequestLocal, updateRequest } from './requests'
 import { toast } from 'sonner'
 import { useState } from 'react'
 
@@ -59,7 +59,7 @@ export function useInfiniteQueryHook(
   })
 }
 
-export function useCreateHook(url: string) {
+export function useRequestHook(url: string) {
   const [isLoading, setIsLoading] = useState(false)
 
   const create = async (values: any) => {
@@ -73,5 +73,16 @@ export function useCreateHook(url: string) {
     return response
   }
 
-  return { create, isLoading }
+  const update = async (id: number, values: any) => {
+    setIsLoading(true)
+    const response = await updateRequest(url, id, values)
+    if (response?.error) {
+      toast.error('Something went wrong. Please try again')
+    }
+
+    setIsLoading(false)
+    return response
+  }
+
+  return { create, update, isLoading }
 }

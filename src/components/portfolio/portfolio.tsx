@@ -1,7 +1,7 @@
 'use client'
-import { TRANSACTION_URL } from '@/helpers/apiEndpoints'
+import { PORTFOLIO_INSTRUMENTS_URL, TRANSACTION_URL } from '@/helpers/apiEndpoints'
 import { DataTable } from '../common/data-table'
-import { TransactionTableColumns } from './transaction-table-columns'
+import { PortfolioInstrumentColumns, TransactionColumns } from './portfolio-columns'
 import { Button } from '../ui/button'
 import { Card } from '../ui/card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
@@ -13,26 +13,63 @@ import InputField from '../common/input-field'
 import { transactionTypes } from '@/helpers/variables'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { useCreateHook } from '@/helpers/hooks'
+import { useQueryHook, useRequestHook } from '@/helpers/hooks'
 import { Loader2 } from 'lucide-react'
-import { getInstrumentOptions } from '@/helpers/utils'
+import { calculatePortfolioAmount, calculatePortfolioQuantity, getInstrumentOptions } from '@/helpers/utils'
+import { useQueryClient } from '@tanstack/react-query'
 
 export const Portfolio = ({ portfolio }: any) => {
   const [refetch, setRefetch] = useState(1)
+  const [query, setQuery] = useState<any>({
+    select: '*',
+    count: { count: 'exact' },
+    filters: [{ type: 'eq', column: 'portfolio_id', value: portfolio.id }],
+  })
+
+  const queryClient = useQueryClient()
+  const { data, isFetching }: any = useQueryHook(PORTFOLIO_INSTRUMENTS_URL, query)
+
+  useEffect(() => {
+    if (refetch > 1) {
+      queryClient.refetchQueries({ queryKey: [PORTFOLIO_INSTRUMENTS_URL, query] })
+    }
+  }, [refetch])
 
   return (
     <section className="flex flex-col gap-4">
-      <h1 className="text-center">{portfolio.name}</h1>
+      <Card className="flex w-full flex-col gap-2 p-4">
+        <div className="flex items-center justify-between">
+          <h6 className="text-center">{portfolio.name}</h6>
+        </div>
+        <DataTable
+          columns={PortfolioInstrumentColumns}
+          url={PORTFOLIO_INSTRUMENTS_URL}
+          query={{
+            select: '*',
+            count: { count: 'exact' },
+            filters: [{ type: 'eq', column: 'portfolio_id', value: portfolio.id }],
+          }}
+          refetch={refetch}
+        />
+      </Card>
 
       <Card className="flex w-full flex-col gap-2 p-4">
         <div className="flex items-center justify-between">
           <h6 className="text-center">Transactions</h6>
-          <AddTransaction portfolio={portfolio} setRefetch={() => setRefetch(refetch + 1)} />
+          <AddTransaction
+            portfolio={portfolio}
+            portfolioInstruments={data?.data || []}
+            setRefetch={() => setRefetch(refetch + 1)}
+          />
         </div>
         <DataTable
-          columns={TransactionTableColumns}
+          columns={TransactionColumns}
           url={TRANSACTION_URL}
-          query={{ select: '*', count: { count: 'exact' } }}
+          query={{
+            select: '*',
+            count: { count: 'exact' },
+            filters: [{ type: 'eq', column: 'portfolio_id', value: portfolio.id }],
+          }}
           refetch={refetch}
         />
       </Card>
@@ -40,10 +77,16 @@ export const Portfolio = ({ portfolio }: any) => {
   )
 }
 
-const AddTransaction = ({ portfolio, setRefetch }: any) => {
+const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) => {
   const [instrumentOptions, setInstrumentOptions] = useState([])
+  const [portfolioinstrumentOptions, setPortfolioInstrumentOptions] = useState<any>([])
   const buttonRef = useRef<any>(null)
-  const { create, isLoading } = useCreateHook(TRANSACTION_URL)
+  const { create: createTransaction, isLoading: createTransactionLoading } = useRequestHook(TRANSACTION_URL)
+  const {
+    create: createInstrument,
+    update: updateInstrument,
+    isLoading: createInstrumentLoading,
+  } = useRequestHook(PORTFOLIO_INSTRUMENTS_URL)
 
   const formSchema = z.object({
     portfolio_id: z.number(),
@@ -71,6 +114,17 @@ const AddTransaction = ({ portfolio, setRefetch }: any) => {
   }, [portfolio])
 
   useEffect(() => {
+    const filtered = portfolioInstruments?.filter((item: any) => item?.instrument !== 'CASH')
+    const options = filtered?.map((item: any) => {
+      return {
+        label: item.instrument,
+        value: item.instrument,
+      }
+    })
+    setPortfolioInstrumentOptions(options)
+  }, [portfolioInstruments])
+
+  useEffect(() => {
     getCompanies()
   }, [])
 
@@ -93,9 +147,7 @@ const AddTransaction = ({ portfolio, setRefetch }: any) => {
           form.setValue('instrument', 'CASH')
           form.setValue('quantity', '1')
         } else {
-          if (form.watch().instrument === 'CASH') {
-            form.setValue('instrument', '')
-          }
+          form.setValue('instrument', '')
         }
       },
     },
@@ -103,8 +155,8 @@ const AddTransaction = ({ portfolio, setRefetch }: any) => {
       form: form,
       name: 'instrument',
       label: 'Instrument',
-      type: 'select',
-      options: instrumentOptions,
+      type: 'searchable-select',
+      options: form.watch().type === 'buy' ? instrumentOptions : portfolioinstrumentOptions,
       placeholder: 'Select Instrument',
       hide: form.watch().type === 'deposit' || form.watch().type === 'withdrawal',
     },
@@ -125,13 +177,42 @@ const AddTransaction = ({ portfolio, setRefetch }: any) => {
   ]
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await create({ ...values })
+    const response = await createTransaction({ ...values })
     if (response.status === 201) {
-      toast.success('Transaction added successfully')
-      form.reset()
-      setRefetch()
-      buttonRef?.current?.click()
+      const has = portfolioInstruments?.find((instrument: any) => instrument.instrument === values.instrument)
+      if (has) {
+        const portfolioResponse = await updateInstrument(has.id, {
+          quantity: calculatePortfolioQuantity(values.type, parseInt(values.quantity || '1'), has.quantity),
+          amount: calculatePortfolioAmount(
+            values.type,
+            parseFloat(values.amount || '1'),
+            has.amount,
+            parseInt(values.quantity || '1'),
+            has.quantity,
+          ),
+        })
+        if (portfolioResponse.status === 204) {
+          success()
+        }
+      } else {
+        const portfolioResponse = await createInstrument({
+          portfolio_id: portfolio.id,
+          instrument: values.instrument,
+          quantity: values.quantity,
+          amount: values.amount,
+        })
+        if (portfolioResponse.status === 201) {
+          success()
+        }
+      }
     }
+  }
+
+  const success = () => {
+    toast.success('Transaction added successfully')
+    form.reset()
+    setRefetch()
+    buttonRef?.current?.click()
   }
 
   return (
@@ -154,7 +235,8 @@ const AddTransaction = ({ portfolio, setRefetch }: any) => {
               {fields.map((field, index) => (
                 <InputField key={index} props={field} />
               ))}
-              {!isLoading ? (
+
+              {!(createTransactionLoading || createInstrumentLoading) ? (
                 <Button type="submit">Submit</Button>
               ) : (
                 <Button type="button">

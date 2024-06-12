@@ -20,11 +20,46 @@ export const stringifyRequestQuery = (values: {} = {}) => {
 }
 
 export const firstLetterUpperCase = (string: string) => {
+  if (!string) return ''
+
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
 export const formatDate = (date: any) => {
+  if (!date) return ''
+
   return format(date, 'do LLL, yyyy')
+}
+
+export const calculatePortfolioQuantity = (type: string, newQuantity: number, currentQuantity: number) => {
+  let quantity = currentQuantity
+  if (type === 'buy') {
+    quantity = currentQuantity + newQuantity
+  }
+  if (type === 'sell') {
+    quantity = currentQuantity - newQuantity
+  }
+  return quantity
+}
+
+export const calculatePortfolioAmount = (
+  type: string,
+  newAmount: number,
+  currentAmount: number,
+  newQuantity: number,
+  currentQuantity: number,
+) => {
+  let amount = currentAmount
+  if (type === 'deposit') {
+    amount = currentAmount + newAmount
+  }
+  if (type === 'withdrawal') {
+    amount = currentAmount - newAmount
+  }
+  if (type === 'buy') {
+    amount = (currentAmount * currentQuantity + newAmount * newQuantity) / (currentQuantity + newQuantity)
+  }
+  return amount
 }
 
 export const getInstrumentOptions = async () => {

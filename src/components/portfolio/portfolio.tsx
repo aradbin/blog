@@ -94,6 +94,9 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
     instrument: z.string().optional(),
     quantity: z.string().optional(),
     amount: z.string().optional(),
+    charge: z.string().optional(),
+    commission: z.string().optional(),
+    tax: z.string().optional(),
     date: z.date().optional(),
   })
 
@@ -105,6 +108,9 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
       instrument: '',
       quantity: '1',
       amount: '1',
+      charge: '0',
+      commission: '0',
+      tax: '0',
       date: new Date(),
     },
   })
@@ -135,7 +141,6 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
 
   const fields = [
     {
-      form: form,
       name: 'type',
       label: 'Type',
       type: 'select',
@@ -152,32 +157,62 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
       },
     },
     {
-      form: form,
       name: 'instrument',
       label: 'Instrument',
       type: 'searchable-select',
       options: form.watch().type === 'buy' ? instrumentOptions : portfolioinstrumentOptions,
       placeholder: 'Select Instrument',
-      hide: form.watch().type === 'deposit' || form.watch().type === 'withdrawal',
+      hide: form.watch().type === '' || form.watch().type === 'deposit' || form.watch().type === 'withdrawal',
     },
     {
-      form: form,
       name: 'quantity',
       label: 'Quantity',
       type: 'number',
-      hide: form.watch().type === 'deposit' || form.watch().type === 'withdrawal',
+      hide: form.watch().type === '' || form.watch().type === 'deposit' || form.watch().type === 'withdrawal',
     },
     {
-      form: form,
       name: 'amount',
       label: form.watch().type === 'buy' || form.watch().type === 'sell' ? 'Price per unit' : 'Amount',
       type: 'number',
     },
-    { form: form, name: 'date', label: 'Date', type: 'date' },
+    {
+      name: 'charge',
+      label: 'Charge',
+      type: 'number',
+      hide: form.watch().type !== 'deposit' && form.watch().type !== 'withdrawal',
+    },
+    {
+      name: 'commission',
+      label: 'Commission',
+      type: 'number',
+      hide: form.watch().type !== 'buy' && form.watch().type !== 'sell',
+    },
+    {
+      name: 'tax',
+      label: 'Tax',
+      type: 'number',
+      hide: form.watch().type !== 'dividend',
+    },
+    { name: 'date', label: 'Date', type: 'date' },
   ]
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await createTransaction({ ...values })
+    const formData = {
+      portfolio_id: values.portfolio_id,
+      type: values.type,
+      instrument: values.instrument,
+      quantity: values.quantity,
+      amount: values.amount,
+      date: values.date,
+      metadata: {
+        expenses: {
+          charge: parseFloat(values.charge || '0'),
+          commission: parseFloat(values.commission || '0'),
+          tax: parseFloat(values.tax || '0'),
+        },
+      },
+    }
+    const response = await createTransaction(formData)
     if (response.status === 201) {
       const has = portfolioInstruments?.find((instrument: any) => instrument.instrument === values.instrument)
       if (has) {
@@ -190,6 +225,13 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
             parseInt(values.quantity || '1'),
             has.quantity,
           ),
+          metadata: {
+            expenses: {
+              charge: parseFloat(values.charge || '0') + (has?.metadata?.expenses?.charge || 0),
+              commission: parseFloat(values.commission || '0') + (has?.metadata?.expenses?.commission || 0),
+              tax: parseFloat(values.tax || '0') + (has?.metadata?.expenses?.tax || 0),
+            },
+          },
         })
         if (portfolioResponse.status === 204) {
           success()
@@ -200,6 +242,13 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
           instrument: values.instrument,
           quantity: values.quantity,
           amount: values.amount,
+          metadata: {
+            expenses: {
+              charge: parseFloat(values.charge || '0'),
+              commission: parseFloat(values.commission || '0'),
+              tax: parseFloat(values.tax || '0'),
+            },
+          },
         })
         if (portfolioResponse.status === 201) {
           success()
@@ -233,7 +282,7 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
               onSubmit={form.handleSubmit(onSubmit)}
             >
               {fields.map((field, index) => (
-                <InputField key={index} props={field} />
+                <InputField key={index} form={form} props={field} />
               ))}
 
               {!(createTransactionLoading || createInstrumentLoading) ? (

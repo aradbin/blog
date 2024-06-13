@@ -62,6 +62,10 @@ export const calculatePortfolioAmount = (
   return amount
 }
 
+export const calculateExpenses = (metadata: any) => {
+  return (metadata?.expenses?.charge || 0) + (metadata?.expenses?.commission || 0) + (metadata?.expenses?.tax || 0)
+}
+
 export const getInstrumentOptions = async () => {
   let initialCompanies = []
   if (localStorage.getItem('companies')) {

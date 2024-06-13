@@ -8,11 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
 import { useState } from 'react'
 
-export default function InputField({ props }: any) {
+export default function InputField({ form, props }: any) {
   const [open, setOpen] = useState(false)
   return (
     <FormField
-      control={props.form.control}
+      control={form.control}
       name={props.name}
       render={({ field }) => (
         <>
@@ -66,7 +66,7 @@ export default function InputField({ props }: any) {
                                     key={index}
                                     value={item?.value}
                                     onSelect={() => {
-                                      props.form.setValue(props.name, item?.value)
+                                      form.setValue(props.name, item?.value)
                                       setOpen(false)
                                     }}
                                   >

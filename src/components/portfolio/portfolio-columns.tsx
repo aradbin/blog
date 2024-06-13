@@ -1,5 +1,5 @@
 'use client'
-import { firstLetterUpperCase, formatDate } from '@/helpers/utils'
+import { calculateExpenses, firstLetterUpperCase, formatDate } from '@/helpers/utils'
 
 export const PortfolioInstrumentColumns = [
   {
@@ -26,14 +26,15 @@ export const PortfolioInstrumentColumns = [
   },
   {
     accessorKey: 'metadata',
-    header: 'Fees & Taxes',
-    cell: ({ row }: any) => row?.original?.metadata?.charge || 0,
+    header: 'Expenses',
+    cell: ({ row }: any) => calculateExpenses(row?.original?.metadata),
     right: true,
   },
   {
     accessorKey: 'total',
     header: 'Total',
-    cell: ({ row }: any) => row?.original?.amount * row?.original?.quantity + (row?.original?.metadata?.charge || 0),
+    cell: ({ row }: any) =>
+      row?.original?.amount * row?.original?.quantity + calculateExpenses(row?.original?.metadata),
     right: true,
   },
 ]
@@ -73,14 +74,15 @@ export const TransactionColumns = [
   },
   {
     accessorKey: 'metadata',
-    header: 'Fees & Taxes',
-    cell: ({ row }: any) => row?.original?.metadata?.charge || 0,
+    header: 'Expenses',
+    cell: ({ row }: any) => calculateExpenses(row?.original?.metadata),
     right: true,
   },
   {
     accessorKey: 'total',
     header: 'Total',
-    cell: ({ row }: any) => row?.original?.amount * row?.original?.quantity + (row?.original?.metadata?.charge || 0),
+    cell: ({ row }: any) =>
+      row?.original?.amount * row?.original?.quantity + calculateExpenses(row?.original?.metadata),
     right: true,
   },
 ]

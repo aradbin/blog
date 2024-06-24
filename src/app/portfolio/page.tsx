@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
-import SelectPortfolio from '@/components/portfolio/select-portfolio'
 import { Portfolio } from '@/components/portfolio/portfolio'
+import { SelectPortfolio } from '@/components/portfolio/select-portfolio'
 
 export default function Page(params: any) {
   const [portfolio, setPortfolio] = useState('')

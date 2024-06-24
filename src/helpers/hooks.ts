@@ -2,6 +2,7 @@ import { UseInfiniteQueryResult, UseQueryResult, useInfiniteQuery, useQuery } fr
 import { createRequest, getRequest, getRequestLocal, updateRequest } from './requests'
 import { toast } from 'sonner'
 import { useState } from 'react'
+import { getUser } from '@/app/(auth)/actions'
 
 export function useQueryHook(url: string, query: {} = {}): UseQueryResult<{ data: any }, Error> {
   return useQuery({
@@ -85,4 +86,17 @@ export function useRequestHook(url: string) {
   }
 
   return { create, update, isLoading }
+}
+
+export function useGetUserHook() {
+  return useQuery({
+    queryKey: ['get', 'user'],
+    queryFn: async () => {
+      const user = await getUser()
+      if (user) {
+        return user
+      }
+      return null
+    },
+  })
 }

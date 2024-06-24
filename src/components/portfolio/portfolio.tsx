@@ -64,7 +64,7 @@ export const Portfolio = ({ portfolio }: any) => {
         <div className="flex items-center justify-between">
           <h6 className="text-center">{portfolio.name}</h6>
         </div>
-        {isFetching ? <PortfolioChartSkeleton /> : <>{chart?.length ? <PortfolioChart data={chart} /> : <></>}</>}
+        {chart?.length ? <PortfolioChart data={chart} /> : <>{isFetching ? <PortfolioChartSkeleton /> : <></>}</>}
       </Card>
 
       <Card className="flex w-full flex-col gap-2 p-4">

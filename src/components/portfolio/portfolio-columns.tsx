@@ -33,8 +33,13 @@ export const PortfolioInstrumentColumns = [
   {
     accessorKey: 'total',
     header: 'Total',
-    cell: ({ row }: any) =>
-      row?.original?.amount * row?.original?.quantity + calculateExpenses(row?.original?.metadata),
+    cell: ({ row }: any) => {
+      if (row?.original?.instrument === 'CASH') {
+        return row?.original?.amount * row?.original?.quantity - calculateExpenses(row?.original?.metadata)
+      } else {
+        return row?.original?.amount * row?.original?.quantity + calculateExpenses(row?.original?.metadata)
+      }
+    },
     right: true,
   },
 ]
@@ -81,8 +86,13 @@ export const TransactionColumns = [
   {
     accessorKey: 'total',
     header: 'Total',
-    cell: ({ row }: any) =>
-      row?.original?.amount * row?.original?.quantity + calculateExpenses(row?.original?.metadata),
+    cell: ({ row }: any) => {
+      if (row?.original?.instrument === 'CASH') {
+        return row?.original?.amount * row?.original?.quantity - calculateExpenses(row?.original?.metadata)
+      } else {
+        return row?.original?.amount * row?.original?.quantity + calculateExpenses(row?.original?.metadata)
+      }
+    },
     right: true,
   },
 ]

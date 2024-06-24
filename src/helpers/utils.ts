@@ -31,6 +31,25 @@ export const formatDate = (date: any) => {
   return format(date, 'do LLL, yyyy')
 }
 
+export const calculateExpenses = (metadata: any) => {
+  return (metadata?.expenses?.charge || 0) + (metadata?.expenses?.commission || 0) + (metadata?.expenses?.tax || 0)
+}
+
+export const getPortfolioInstrumentTotal = (instrument: any) => {
+  return instrument?.amount * instrument?.quantity + calculateExpenses(instrument?.metadata)
+}
+
+export const getPortfolioPercentage = (data: any, instrument: any) => {
+  let total = 0
+  let percentage = 0
+  data?.forEach((item: any) => {
+    total += getPortfolioInstrumentTotal(item)
+  })
+  percentage = (getPortfolioInstrumentTotal(instrument) / total) * 100
+
+  return parseFloat(percentage.toFixed(2))
+}
+
 export const calculatePortfolioQuantity = (type: string, newQuantity: number, currentQuantity: number) => {
   let quantity = currentQuantity
   if (type === 'buy') {
@@ -60,10 +79,6 @@ export const calculatePortfolioAmount = (
     amount = (currentAmount * currentQuantity + newAmount * newQuantity) / (currentQuantity + newQuantity)
   }
   return amount
-}
-
-export const calculateExpenses = (metadata: any) => {
-  return (metadata?.expenses?.charge || 0) + (metadata?.expenses?.commission || 0) + (metadata?.expenses?.tax || 0)
 }
 
 export const getInstrumentOptions = async () => {

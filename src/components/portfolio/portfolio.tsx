@@ -15,11 +15,19 @@ import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { useQueryHook, useRequestHook } from '@/helpers/hooks'
 import { Loader2 } from 'lucide-react'
-import { calculatePortfolioAmount, calculatePortfolioQuantity, getInstrumentOptions } from '@/helpers/utils'
+import {
+  calculatePortfolioAmount,
+  calculatePortfolioQuantity,
+  getInstrumentOptions,
+  getPortfolioPercentage,
+} from '@/helpers/utils'
 import { useQueryClient } from '@tanstack/react-query'
+import PortfolioChart from '../chart/portfolio-chart'
+import { PortfolioChartSkeleton } from './portfolio-skeleton'
 
 export const Portfolio = ({ portfolio }: any) => {
   const [refetch, setRefetch] = useState(1)
+  const [chart, setChart] = useState([])
   const [query, setQuery] = useState<any>({
     select: '*',
     count: { count: 'exact' },
@@ -35,11 +43,33 @@ export const Portfolio = ({ portfolio }: any) => {
     }
   }, [refetch])
 
+  useEffect(() => {
+    if (data?.data) {
+      const chartData = data?.data?.map((item: any) => {
+        const percentage = getPortfolioPercentage(data?.data, item)
+        return {
+          id: item?.instrument,
+          label: item?.instrument,
+          value: percentage,
+        }
+      })
+      console.log('chartData', chartData)
+      setChart(chartData)
+    }
+  }, [data])
+
   return (
     <section className="flex flex-col gap-4">
       <Card className="flex w-full flex-col gap-2 p-4">
         <div className="flex items-center justify-between">
           <h6 className="text-center">{portfolio.name}</h6>
+        </div>
+        {isFetching ? <PortfolioChartSkeleton /> : <>{chart?.length ? <PortfolioChart data={chart} /> : <></>}</>}
+      </Card>
+
+      <Card className="flex w-full flex-col gap-2 p-4">
+        <div className="flex items-center justify-between">
+          <h6 className="text-center">Instruments</h6>
         </div>
         <DataTable
           columns={PortfolioInstrumentColumns}

@@ -1,8 +1,8 @@
 'use client'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PORTFOLIO_URL } from '@/helpers/apiEndpoints'
-import { Loader2, RefreshCw } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { Loader2 } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import { Skeleton } from '../ui/skeleton'
 import { useGetUserHook, useQueryHook, useRequestHook } from '@/helpers/hooks'
 import { Button } from '../ui/button'
@@ -14,7 +14,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import InputField from '../common/input-field'
 import { toast } from 'sonner'
 import { useQueryClient } from '@tanstack/react-query'
-import { getUser } from '@/app/(auth)/actions'
 
 export const SelectPortfolio = ({ value, onChangeHandler }: any) => {
   const { data, isFetching }: any = useQueryHook(PORTFOLIO_URL)

@@ -28,7 +28,7 @@ import { PortfolioChartSkeleton } from './portfolio-skeleton'
 export const Portfolio = ({ portfolio }: any) => {
   const [refetch, setRefetch] = useState(1)
   const [chart, setChart] = useState([])
-  const [query, setQuery] = useState<any>({
+  const [query, setQuery] = useState({
     select: '*',
     count: { count: 'exact' },
     filters: [{ type: 'eq', column: 'portfolio_id', value: portfolio.id }],
@@ -44,7 +44,11 @@ export const Portfolio = ({ portfolio }: any) => {
   }, [refetch])
 
   useEffect(() => {
-    if (data?.data) {
+    setQuery({ ...query, filters: [{ type: 'eq', column: 'portfolio_id', value: portfolio.id }] })
+  }, [portfolio])
+
+  useEffect(() => {
+    if (data?.data?.length) {
       const chartData = data?.data?.map((item: any) => {
         const percentage = getPortfolioPercentage(data?.data, item)
         return {
@@ -53,8 +57,9 @@ export const Portfolio = ({ portfolio }: any) => {
           value: percentage,
         }
       })
-      console.log('chartData', chartData)
       setChart(chartData)
+    } else {
+      setChart([])
     }
   }, [data])
 
@@ -74,11 +79,7 @@ export const Portfolio = ({ portfolio }: any) => {
         <DataTable
           columns={PortfolioInstrumentColumns}
           url={PORTFOLIO_INSTRUMENTS_URL}
-          query={{
-            select: '*',
-            count: { count: 'exact' },
-            filters: [{ type: 'eq', column: 'portfolio_id', value: portfolio.id }],
-          }}
+          query={query}
           refetch={refetch}
         />
       </Card>
@@ -92,16 +93,7 @@ export const Portfolio = ({ portfolio }: any) => {
             setRefetch={() => setRefetch(refetch + 1)}
           />
         </div>
-        <DataTable
-          columns={TransactionColumns}
-          url={TRANSACTION_URL}
-          query={{
-            select: '*',
-            count: { count: 'exact' },
-            filters: [{ type: 'eq', column: 'portfolio_id', value: portfolio.id }],
-          }}
-          refetch={refetch}
-        />
+        <DataTable columns={TransactionColumns} url={TRANSACTION_URL} query={query} refetch={refetch} />
       </Card>
     </section>
   )

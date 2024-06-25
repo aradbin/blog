@@ -1,4 +1,3 @@
-'use client'
 import { calculateExpenses, firstLetterUpperCase, formatDate, getPortfolioInstrumentTotal } from '@/helpers/utils'
 
 export const PortfolioInstrumentColumns = [

@@ -2,19 +2,12 @@
 import { PORTFOLIO_INSTRUMENTS_URL, PORTFOLIO_TRANSACTION_URL } from '@/helpers/apiEndpoints'
 import { DataTable } from '../common/data-table'
 import { PortfolioInstrumentColumns, PortfolioTransactionColumns } from './portfolio-columns'
-import { Button } from '../ui/button'
 import { Card } from '../ui/card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Form } from '../ui/form'
-import InputField from '../common/input-field'
-import { transactionTypes } from '@/helpers/variables'
-import { useEffect, useRef, useState } from 'react'
-import { toast } from 'sonner'
+import { useEffect, useState } from 'react'
 import { useQueryHook, useRequestHook } from '@/helpers/hooks'
-import { Loader2 } from 'lucide-react'
 import {
   calculatePortfolioInstrumentNewAmount,
   calculatePortfolioInstrumentNewQuantity,

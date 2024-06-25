@@ -1,5 +1,5 @@
 'use client'
-import { calculateExpenses, firstLetterUpperCase, formatDate } from '@/helpers/utils'
+import { calculateExpenses, firstLetterUpperCase, formatDate, getPortfolioInstrumentTotal } from '@/helpers/utils'
 
 export const PortfolioInstrumentColumns = [
   {
@@ -33,18 +33,12 @@ export const PortfolioInstrumentColumns = [
   {
     accessorKey: 'total',
     header: 'Total',
-    cell: ({ row }: any) => {
-      if (row?.original?.instrument === 'CASH') {
-        return row?.original?.amount * row?.original?.quantity - calculateExpenses(row?.original?.metadata)
-      } else {
-        return row?.original?.amount * row?.original?.quantity + calculateExpenses(row?.original?.metadata)
-      }
-    },
+    cell: ({ row }: any) => getPortfolioInstrumentTotal(row?.original),
     right: true,
   },
 ]
 
-export const TransactionColumns = [
+export const PortfolioTransactionColumns = [
   {
     accessorKey: 'date',
     header: 'Date',
@@ -86,13 +80,7 @@ export const TransactionColumns = [
   {
     accessorKey: 'total',
     header: 'Total',
-    cell: ({ row }: any) => {
-      if (row?.original?.instrument === 'CASH') {
-        return row?.original?.amount * row?.original?.quantity - calculateExpenses(row?.original?.metadata)
-      } else {
-        return row?.original?.amount * row?.original?.quantity + calculateExpenses(row?.original?.metadata)
-      }
-    },
+    cell: ({ row }: any) => getPortfolioInstrumentTotal(row?.original),
     right: true,
   },
 ]

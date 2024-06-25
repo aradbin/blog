@@ -31,56 +31,6 @@ export const formatDate = (date: any) => {
   return format(date, 'do LLL, yyyy')
 }
 
-export const calculateExpenses = (metadata: any) => {
-  return (metadata?.expenses?.charge || 0) + (metadata?.expenses?.commission || 0) + (metadata?.expenses?.tax || 0)
-}
-
-export const getPortfolioInstrumentTotal = (instrument: any) => {
-  return instrument?.amount * instrument?.quantity + calculateExpenses(instrument?.metadata)
-}
-
-export const getPortfolioPercentage = (data: any, instrument: any) => {
-  let total = 0
-  let percentage = 0
-  data?.forEach((item: any) => {
-    total += getPortfolioInstrumentTotal(item)
-  })
-  percentage = (getPortfolioInstrumentTotal(instrument) / total) * 100
-
-  return parseFloat(percentage.toFixed(2))
-}
-
-export const calculatePortfolioQuantity = (type: string, newQuantity: number, currentQuantity: number) => {
-  let quantity = currentQuantity
-  if (type === 'buy') {
-    quantity = currentQuantity + newQuantity
-  }
-  if (type === 'sell') {
-    quantity = currentQuantity - newQuantity
-  }
-  return quantity
-}
-
-export const calculatePortfolioAmount = (
-  type: string,
-  newAmount: number,
-  currentAmount: number,
-  newQuantity: number,
-  currentQuantity: number,
-) => {
-  let amount = currentAmount
-  if (type === 'deposit') {
-    amount = currentAmount + newAmount
-  }
-  if (type === 'withdrawal') {
-    amount = currentAmount - newAmount
-  }
-  if (type === 'buy') {
-    amount = (currentAmount * currentQuantity + newAmount * newQuantity) / (currentQuantity + newQuantity)
-  }
-  return amount
-}
-
 export const getInstrumentOptions = async () => {
   let initialCompanies = []
   if (localStorage.getItem('companies')) {
@@ -100,6 +50,60 @@ export const getInstrumentOptions = async () => {
   }))
 
   return options
+}
+
+export const calculateExpenses = (metadata: any) => {
+  return (metadata?.expenses?.charge || 0) + (metadata?.expenses?.commission || 0) + (metadata?.expenses?.tax || 0)
+}
+
+export const getPortfolioInstrumentTotal = (instrument: any) => {
+  if (instrument?.instrument === 'CASH') {
+    return instrument?.amount * instrument?.quantity - calculateExpenses(instrument?.metadata)
+  } else {
+    return instrument?.amount * instrument?.quantity + calculateExpenses(instrument?.metadata)
+  }
+}
+
+export const getPortfolioInstrumentPercentage = (portfolioInstruments: any, instrument: any) => {
+  let total = 0
+  let percentage = 0
+  portfolioInstruments?.forEach((item: any) => {
+    total += getPortfolioInstrumentTotal(item)
+  })
+  percentage = (getPortfolioInstrumentTotal(instrument) / total) * 100
+
+  return parseFloat(percentage.toFixed(2))
+}
+
+export const calculatePortfolioInstrumentNewQuantity = (type: string, newQuantity: number, currentQuantity: number) => {
+  let quantity = currentQuantity
+  if (type === 'buy') {
+    quantity = currentQuantity + newQuantity
+  }
+  if (type === 'sell') {
+    quantity = currentQuantity - newQuantity
+  }
+  return quantity
+}
+
+export const calculatePortfolioInstrumentNewAmount = (
+  type: string,
+  newAmount: number,
+  currentAmount: number,
+  newQuantity: number,
+  currentQuantity: number,
+) => {
+  let amount = currentAmount
+  if (type === 'deposit') {
+    amount = currentAmount + newAmount
+  }
+  if (type === 'withdrawal') {
+    amount = currentAmount - newAmount
+  }
+  if (type === 'buy') {
+    amount = (currentAmount * currentQuantity + newAmount * newQuantity) / (currentQuantity + newQuantity)
+  }
+  return amount
 }
 
 export const getEpsColor = (value: number) => {

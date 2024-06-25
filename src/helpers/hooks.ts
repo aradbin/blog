@@ -63,22 +63,28 @@ export function useInfiniteQueryHook(
 export function useRequestHook(url: string) {
   const [isLoading, setIsLoading] = useState(false)
 
-  const create = async (values: any) => {
+  const create = async (values: any, success: string = '', error: string = '') => {
     setIsLoading(true)
     const response = await createRequest(url, values)
+    if (response?.status === 201 && success) {
+      toast.success(success)
+    }
     if (response?.error) {
-      toast.error('Something went wrong. Please try again')
+      toast.error(error || 'Something went wrong. Please try again')
     }
 
     setIsLoading(false)
     return response
   }
 
-  const update = async (id: number, values: any) => {
+  const update = async (id: number, values: any, success: string = '', error: string = '') => {
     setIsLoading(true)
     const response = await updateRequest(url, id, values)
+    if (response?.status === 204 && success) {
+      toast.success(success)
+    }
     if (response?.error) {
-      toast.error('Something went wrong. Please try again')
+      toast.error(error || 'Something went wrong. Please try again')
     }
 
     setIsLoading(false)

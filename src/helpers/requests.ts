@@ -138,10 +138,16 @@ export async function upsertRequest(url: string, values: any) {
   return response
 }
 
-export async function deleteRequest(url: string) {
-  return await axios.delete(url).catch((error) => {
-    catchError(error)
-  })
+export async function deleteRequest(url: string, id: any) {
+  const cookieStore = cookies()
+  const supabase = createServerClient(cookieStore)
+  const response = await supabase.from(url).delete().eq('id', id)
+
+  if (response?.error) {
+    catchError(response?.error)
+  }
+
+  return response
 }
 
 const catchError = (error: any) => {

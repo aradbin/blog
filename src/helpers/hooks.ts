@@ -1,5 +1,5 @@
 import { UseInfiniteQueryResult, UseQueryResult, useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { createRequest, getRequest, getRequestLocal, updateRequest } from './requests'
+import { createRequest, deleteRequest, getRequest, getRequestLocal, updateRequest } from './requests'
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { getUser } from '@/app/(auth)/actions'
@@ -91,7 +91,21 @@ export function useRequestHook(url: string) {
     return response
   }
 
-  return { create, update, isLoading }
+  const remove = async (id: number, success: string = '', error: string = '') => {
+    setIsLoading(true)
+    const response = await deleteRequest(url, id)
+    if (response?.status === 204 && success) {
+      toast.success(success)
+    }
+    if (response?.error) {
+      toast.error(error || 'Something went wrong. Please try again')
+    }
+
+    setIsLoading(false)
+    return response
+  }
+
+  return { create, update, remove, isLoading }
 }
 
 export function useGetUserHook() {

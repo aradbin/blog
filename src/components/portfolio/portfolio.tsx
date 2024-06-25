@@ -112,6 +112,7 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
   const {
     create: createInstrument,
     update: updateInstrument,
+    remove: removeInstrument,
     isLoading: createInstrumentLoading,
   } = useRequestHook(PORTFOLIO_INSTRUMENTS_URL)
 
@@ -168,33 +169,45 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
     if (response.status === 201) {
       const has = portfolioInstruments?.find((instrument: any) => instrument.instrument === values.instrument)
       if (has) {
-        const portfolioResponse = await updateInstrument(
-          has.id,
-          {
-            quantity: calculatePortfolioInstrumentNewQuantity(
-              values.type,
-              parseInt(values.quantity || '1'),
-              has.quantity,
-            ),
-            amount: calculatePortfolioInstrumentNewAmount(
-              values.type,
-              parseFloat(values.amount || '1'),
-              has.amount,
-              parseInt(values.quantity || '1'),
-              has.quantity,
-            ),
-            metadata: {
-              expenses: {
-                charge: parseFloat(values.charge || '0') + (has?.metadata?.expenses?.charge || 0),
-                commission: parseFloat(values.commission || '0') + (has?.metadata?.expenses?.commission || 0),
-                tax: parseFloat(values.tax || '0') + (has?.metadata?.expenses?.tax || 0),
+        const newQuantity = calculatePortfolioInstrumentNewQuantity(
+          values.type,
+          parseInt(values.quantity || '1'),
+          has.quantity,
+        )
+        if (values.type === 'sell' && newQuantity === 0) {
+          const portfolioResponse = await removeInstrument(has.id)
+          if (portfolioResponse.status === 204) {
+            success()
+          }
+        } else {
+          const portfolioResponse = await updateInstrument(
+            has.id,
+            {
+              quantity: calculatePortfolioInstrumentNewQuantity(
+                values.type,
+                parseInt(values.quantity || '1'),
+                has.quantity,
+              ),
+              amount: calculatePortfolioInstrumentNewAmount(
+                values.type,
+                parseFloat(values.amount || '1'),
+                has.amount,
+                parseInt(values.quantity || '1'),
+                has.quantity,
+              ),
+              metadata: {
+                expenses: {
+                  charge: parseFloat(values.charge || '0') + (has?.metadata?.expenses?.charge || 0),
+                  commission: parseFloat(values.commission || '0') + (has?.metadata?.expenses?.commission || 0),
+                  tax: parseFloat(values.tax || '0') + (has?.metadata?.expenses?.tax || 0),
+                },
               },
             },
-          },
-          'Transaction added successfully',
-        )
-        if (portfolioResponse.status === 204) {
-          success()
+            'Transaction added successfully',
+          )
+          if (portfolioResponse.status === 204) {
+            success()
+          }
         }
       } else {
         const portfolioResponse = await createInstrument(

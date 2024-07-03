@@ -52,16 +52,30 @@ export const getInstrumentOptions = async () => {
   return options
 }
 
-export const calculateExpenses = (metadata: any) => {
+export const calculateBalance = (portfolioInstruments: any) => {
+  const cash = portfolioInstruments?.find((item: any) => item?.instrument === 'CASH')
+
+  return cash?.amount || 0
+}
+
+export const calculateExpense = (metadata: any) => {
   return (metadata?.expenses?.charge || 0) + (metadata?.expenses?.commission || 0) + (metadata?.expenses?.tax || 0)
 }
 
+export const getPortfolioInstrumentAmount = (instrument: any) => {
+  return instrument?.instrument === 'CASH' ? '' : instrument?.amount
+}
+
+export const getPortfolioInstrumentQuantity = (instrument: any) => {
+  return instrument?.instrument === 'CASH' ? '' : instrument?.quantity
+}
+
+export const getPortfolioInstrumentSubTotal = (instrument: any) => {
+  return instrument?.amount * instrument?.quantity
+}
+
 export const getPortfolioInstrumentTotal = (instrument: any) => {
-  if (instrument?.instrument === 'CASH') {
-    return instrument?.amount * instrument?.quantity - calculateExpenses(instrument?.metadata)
-  } else {
-    return instrument?.amount * instrument?.quantity + calculateExpenses(instrument?.metadata)
-  }
+  return instrument?.amount * instrument?.quantity + calculateExpense(instrument?.metadata)
 }
 
 export const getPortfolioInstrumentPercentage = (portfolioInstruments: any, instrument: any) => {
@@ -73,6 +87,16 @@ export const getPortfolioInstrumentPercentage = (portfolioInstruments: any, inst
   percentage = (getPortfolioInstrumentTotal(instrument) / total) * 100
 
   return parseFloat(percentage.toFixed(2))
+}
+
+export const checkBalance = (balance: any, values: any) => {
+  if (values.type === 'buy' || values.type === 'sell') {
+    if (balance < values.amount * values.quantity) {
+      return false
+    }
+  }
+
+  return true
 }
 
 export const calculatePortfolioInstrumentNewQuantity = (type: string, newQuantity: number, currentQuantity: number) => {

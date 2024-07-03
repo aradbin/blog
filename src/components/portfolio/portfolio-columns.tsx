@@ -1,4 +1,12 @@
-import { calculateExpenses, firstLetterUpperCase, formatDate, getPortfolioInstrumentTotal } from '@/helpers/utils'
+import {
+  calculateExpense,
+  firstLetterUpperCase,
+  formatDate,
+  getPortfolioInstrumentAmount,
+  getPortfolioInstrumentQuantity,
+  getPortfolioInstrumentSubTotal,
+  getPortfolioInstrumentTotal,
+} from '@/helpers/utils'
 
 export const PortfolioInstrumentColumns = [
   {
@@ -8,31 +16,19 @@ export const PortfolioInstrumentColumns = [
   {
     accessorKey: 'amount',
     header: 'Amount',
-    cell: ({ row }: any) => (row?.original?.instrument === 'CASH' ? '' : row?.original?.amount),
+    cell: ({ row }: any) => getPortfolioInstrumentAmount(row?.original),
     right: true,
   },
   {
     accessorKey: 'quantity',
     header: 'Quantity',
-    cell: ({ row }: any) => (row?.original?.instrument === 'CASH' ? '' : row?.original?.quantity),
+    cell: ({ row }: any) => getPortfolioInstrumentQuantity(row?.original),
     right: true,
   },
   {
     accessorKey: 'subtotal',
-    header: 'Sub Total',
-    cell: ({ row }: any) => row?.original?.amount * row?.original?.quantity,
-    right: true,
-  },
-  {
-    accessorKey: 'metadata',
-    header: 'Expenses',
-    cell: ({ row }: any) => calculateExpenses(row?.original?.metadata),
-    right: true,
-  },
-  {
-    accessorKey: 'total',
     header: 'Total',
-    cell: ({ row }: any) => getPortfolioInstrumentTotal(row?.original),
+    cell: ({ row }: any) => getPortfolioInstrumentSubTotal(row?.original),
     right: true,
   },
 ]
@@ -55,25 +51,25 @@ export const PortfolioTransactionColumns = [
   {
     accessorKey: 'amount',
     header: 'Amount',
-    cell: ({ row }: any) => (row?.original?.instrument === 'CASH' ? '' : row?.original?.amount),
+    cell: ({ row }: any) => getPortfolioInstrumentAmount(row?.original),
     right: true,
   },
   {
     accessorKey: 'quantity',
     header: 'Quantity',
-    cell: ({ row }: any) => (row?.original?.instrument === 'CASH' ? '' : row?.original?.quantity),
+    cell: ({ row }: any) => getPortfolioInstrumentQuantity(row?.original),
     right: true,
   },
   {
     accessorKey: 'subtotal',
     header: 'Sub Total',
-    cell: ({ row }: any) => row?.original?.amount * row?.original?.quantity,
+    cell: ({ row }: any) => getPortfolioInstrumentSubTotal(row?.original),
     right: true,
   },
   {
     accessorKey: 'metadata',
     header: 'Expenses',
-    cell: ({ row }: any) => calculateExpenses(row?.original?.metadata),
+    cell: ({ row }: any) => calculateExpense(row?.original?.metadata),
     right: true,
   },
   {

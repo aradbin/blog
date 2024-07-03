@@ -9,8 +9,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useQueryHook, useRequestHook } from '@/helpers/hooks'
 import {
+  calculateBalance,
   calculatePortfolioInstrumentNewAmount,
   calculatePortfolioInstrumentNewQuantity,
+  checkBalance,
   getInstrumentOptions,
   getPortfolioInstrumentPercentage,
 } from '@/helpers/utils'
@@ -106,6 +108,7 @@ export const Portfolio = ({ portfolio }: any) => {
 const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) => {
   const [instrumentOptions, setInstrumentOptions] = useState([])
   const [portfolioinstrumentOptions, setPortfolioInstrumentOptions] = useState<any>([])
+  const [balance, setBalance] = useState(0)
   const [show, setShow] = useState(true)
   const [loading, setLoading] = useState(false)
   const { create: createTransaction, isLoading: createTransactionLoading } = useRequestHook(PORTFOLIO_TRANSACTION_URL)
@@ -142,6 +145,8 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
       }
     })
     setPortfolioInstrumentOptions(options)
+    const cash = calculateBalance(portfolioInstruments)
+    setBalance(cash)
   }, [portfolioInstruments])
 
   const getCompanies = async () => {
@@ -150,6 +155,11 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
   }
 
   async function onSubmit(values: z.infer<typeof portfolioTransactionSchema>) {
+    if (!checkBalance(balance, values)) {
+      form.setError('amount', { message: 'Insufficient balance' })
+      return false
+    }
+
     const formData = {
       portfolio_id: portfolio.id,
       type: values.type,

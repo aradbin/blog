@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { useQueryHook, useRequestHook } from '@/helpers/hooks'
 import {
   calculateBalance,
+  calculatePortfolioCashNewAmount,
   calculatePortfolioInstrumentNewAmount,
   calculatePortfolioInstrumentNewQuantity,
   checkBalance,
@@ -155,9 +156,17 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
   }
 
   async function onSubmit(values: z.infer<typeof portfolioTransactionSchema>) {
-    if (!checkBalance(balance, values)) {
+    if (values.type === 'buy' && !checkBalance(balance, values)) {
       form.setError('amount', { message: 'Insufficient balance' })
       return false
+    }
+
+    if (values.type === 'sell') {
+      const has = portfolioInstruments?.find((instrument: any) => instrument.instrument === values.instrument)
+      if (has && parseInt(values.quantity || '1') > has.quantity) {
+        form.setError('quantity', { message: 'Insufficient quantity' })
+        return false
+      }
     }
 
     const formData = {
@@ -187,7 +196,7 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
         if (values.type === 'sell' && newQuantity === 0) {
           const portfolioResponse = await removeInstrument(has.id)
           if (portfolioResponse.status === 204) {
-            success()
+            updatePortfolioCash(values)
           }
         } else {
           const portfolioResponse = await updateInstrument(
@@ -216,7 +225,7 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
             'Transaction added successfully',
           )
           if (portfolioResponse.status === 204) {
-            success()
+            updatePortfolioCash(values)
           }
         }
       } else {
@@ -237,10 +246,27 @@ const AddTransaction = ({ portfolio, portfolioInstruments, setRefetch }: any) =>
           'Transaction added successfully',
         )
         if (portfolioResponse.status === 201) {
-          success()
+          updatePortfolioCash(values)
         }
       }
     }
+  }
+
+  const updatePortfolioCash = async (values: z.infer<typeof portfolioTransactionSchema>) => {
+    if (values.type === 'buy' || values.type === 'sell' || values.type === 'dividend') {
+      const cash = portfolioInstruments?.find((item: any) => item?.instrument === 'CASH')
+      if (cash) {
+        await updateInstrument(
+          cash.id,
+          {
+            amount: calculatePortfolioCashNewAmount(cash.amount, values),
+          },
+          'Portfolio updated successfully',
+        )
+      }
+    }
+
+    success()
   }
 
   const success = () => {

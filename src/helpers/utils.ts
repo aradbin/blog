@@ -90,10 +90,8 @@ export const getPortfolioInstrumentPercentage = (portfolioInstruments: any, inst
 }
 
 export const checkBalance = (balance: any, values: any) => {
-  if (values.type === 'buy' || values.type === 'sell') {
-    if (balance < values.amount * values.quantity) {
-      return false
-    }
+  if (balance < values.amount * values.quantity + values.commission) {
+    return false
   }
 
   return true
@@ -128,6 +126,21 @@ export const calculatePortfolioInstrumentNewAmount = (
     amount = (currentAmount * currentQuantity + newAmount * newQuantity) / (currentQuantity + newQuantity)
   }
   return amount
+}
+
+export const calculatePortfolioCashNewAmount = (currentAmount: number, values: any) => {
+  let newAmount = currentAmount
+  if (values.type === 'buy') {
+    newAmount = currentAmount - (values.amount * values.quantity + values.commission)
+  }
+  if (values.type === 'sell') {
+    newAmount = currentAmount + (values.amount * values.quantity - values.commission)
+  }
+  if (values.type === 'dividend') {
+    newAmount = currentAmount + (values.amount * values.quantity - values.tax)
+  }
+
+  return newAmount
 }
 
 export const getEpsColor = (value: number) => {
